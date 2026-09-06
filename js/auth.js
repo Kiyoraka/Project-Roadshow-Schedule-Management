@@ -6,8 +6,23 @@ window.RoadCrew = window.RoadCrew || {};
   var SESSION_KEY = 'roadcrew.session';
   var THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
-  // Directories that sit one level below the repo root.
-  var NESTED_DIRS = { admin: true, staff: true };
+  // Directories that sit one level below the repo root. A portal folder missing from
+  // here resolves prefix() to '' and every redirect inside it silently 404s - no error,
+  // no console warning, just a dead link. Add the folder here whenever one is created.
+  var NESTED_DIRS = { admin: true, client: true, staff: true };
+
+  // Every role that can hold a session, and where that role's portal lives. One map
+  // rather than two lists, so a role can never be accepted without somewhere to send
+  // it - which is what would bounce a valid session back to the landing page forever.
+  var ROLE_HOMES = {
+    admin: 'admin/dashboard.html',
+    client: 'client/schedules.html',
+    staff: 'staff/calendar.html'
+  };
+
+  function knownRole(role) {
+    return Object.prototype.hasOwnProperty.call(ROLE_HOMES, role);
+  }
 
   // ---------------------------------------------------------------------
   // Storage (localStorage with in-memory fallback, same shape as data.js)
@@ -209,7 +224,7 @@ window.RoadCrew = window.RoadCrew || {};
     if (typeof session.userId !== 'string' || session.userId === '') {
       return null;
     }
-    if (session.role !== 'admin' && session.role !== 'staff') {
+    if (!knownRole(session.role)) {
       return null;
     }
     if (typeof session.expiresAt !== 'number' || !isFinite(session.expiresAt)) {
@@ -292,6 +307,12 @@ window.RoadCrew = window.RoadCrew || {};
     if (match.password !== password) {
       return { ok: false, reason: 'invalid' };
     }
+    // Deactivating a user in the admin Users screen dimmed the row but did nothing
+    // else - the account still signed in. Checked after the password so a wrong
+    // guess never learns whether the account exists, only the real owner does.
+    if (match.status === 'inactive') {
+      return { ok: false, reason: 'inactive' };
+    }
 
     writeSession(match);
     return { ok: true, user: match };
@@ -317,16 +338,27 @@ window.RoadCrew = window.RoadCrew || {};
 
   auth.homeFor = function (role) {
     var base = prefix();
-    if (role === 'admin') {
-      return base + 'admin/dashboard.html';
-    }
-    if (role === 'staff') {
-      return base + 'staff/calendar.html';
+    if (knownRole(role)) {
+      return base + ROLE_HOMES[role];
     }
     return base + 'index.html';
   };
 
-  auth.requireRole = function (role) {
+  // True when this role has a portal to be sent to. The landing page uses it before
+  // redirecting a live session, so an unrecognised role lands on the public site once
+  // instead of being replaced back onto it on every load.
+  auth.hasPortal = knownRole;
+
+  // Accepts one role or several - requireRole('admin') and requireRole('admin','client')
+  // both work, so a page shared by two portals does not need its own guard. Called with
+  // nothing, nobody passes; failing shut is the right direction for a page guard.
+  auth.requireRole = function () {
+    var wanted = [];
+    var i;
+    for (i = 0; i < arguments.length; i += 1) {
+      if (arguments[i]) { wanted.push(String(arguments[i])); }
+    }
+
     var session = validSession();
     var user = session ? lookupUser(session.userId) : null;
 
@@ -336,7 +368,12 @@ window.RoadCrew = window.RoadCrew || {};
       return null;
     }
 
-    if (session.role !== role) {
+    var allowed = false;
+    for (i = 0; i < wanted.length; i += 1) {
+      if (session.role === wanted[i]) { allowed = true; break; }
+    }
+
+    if (!allowed) {
       redirect(auth.homeFor(session.role) + '?wrongPortal=1');
       return null;
     }

@@ -273,7 +273,12 @@ window.RoadCrew = window.RoadCrew || {};
 
         var result = R.auth.login(mail, pass);
         if (!result.ok) {
-          loginError('That email and password do not match an account.');
+          // A deactivated account gets the truth rather than "no such account" - the
+          // credentials were right, and telling the owner otherwise sends them hunting
+          // for a typo that isn't there.
+          loginError(result.reason === 'inactive'
+            ? 'That account has been deactivated. Ask the coordinator to switch it back on.'
+            : 'That email and password do not match an account.');
           byId('password').value = '';
           byId('password').focus();
           return;
@@ -541,9 +546,11 @@ window.RoadCrew = window.RoadCrew || {};
   /* ------------------------------------------------------------- init --- */
 
   function init() {
-    // A visitor holding a live session goes straight to their portal.
+    // A visitor holding a live session goes straight to their portal. A role with no
+    // portal stays here instead - homeFor would hand back this very page, and replacing
+    // the page with itself on every load is an unbreakable reload loop.
     var existing = R.auth.current();
-    if (existing) {
+    if (existing && R.auth.hasPortal(existing.role)) {
       window.location.replace(R.auth.homeFor(existing.role));
       return;
     }
