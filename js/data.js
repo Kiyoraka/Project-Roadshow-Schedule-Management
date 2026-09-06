@@ -11,9 +11,12 @@ window.RoadCrew = window.RoadCrew || {};
       { id: 'r-south', name: 'Southern' },
       { id: 'r-east', name: 'East Coast' }
     ],
+    // reportPassword gates the public sales report on the landing page. It is checked in
+    // the browser, so it is a presentation gate, not access control - nothing sensitive
+    // sits behind it. Editable per brand from admin Settings.
     brands: [
-      { id: 'b-kapalapi', name: 'Kapal Api', color: '#C0392B' },
-      { id: 'b-jasmine', name: 'Jasmine', color: '#2E8B57' }
+      { id: 'b-kapalapi', name: 'Kapal Api', color: '#C0392B', reportPassword: 'kapalapi2026' },
+      { id: 'b-jasmine', name: 'Jasmine', color: '#2E8B57', reportPassword: 'jasmine2026' }
     ],
     outlets: [
       { id: 'o-01', name: 'Pasaraya U All Mart', regionId: 'r-east', city: 'Pasir Mas' },
@@ -71,6 +74,68 @@ window.RoadCrew = window.RoadCrew || {};
       // Both sit inside schedules Airene genuinely holds - s-12 (4-5 Sep) and s-08 (12-14 Aug).
       { id: 'c-07', scheduleId: 's-12', userId: 'u-01', date: '2026-09-05', time: '10:12', photo: 'img/checkin-02.svg', note: 'Day 2, sampling running' },
       { id: 'c-08', scheduleId: 's-08', userId: 'u-01', date: '2026-08-14', time: '10:05', photo: 'img/checkin-04.svg', note: '' }
+    ],
+
+    // Products and sales back the gated brand report on the landing page. The design brief
+    // put sales capture out of scope, so none of this existed until the report was asked for.
+    products: [
+      { id: 'p-ka-01', brandId: 'b-kapalapi', name: 'Special Mix' },
+      { id: 'p-ka-02', brandId: 'b-kapalapi', name: 'Grande White Coffee' },
+      { id: 'p-ka-03', brandId: 'b-kapalapi', name: 'Susu' },
+      { id: 'p-ka-04', brandId: 'b-kapalapi', name: 'Kopi O' },
+      { id: 'p-js-01', brandId: 'b-jasmine', name: 'Pusa Cream 5kg' },
+      { id: 'p-js-02', brandId: 'b-jasmine', name: 'Fragrant Rice 5kg' },
+      { id: 'p-js-03', brandId: 'b-jasmine', name: 'Basmati 1kg' },
+      { id: 'p-js-04', brandId: 'b-jasmine', name: 'Super Special 10kg' }
+    ],
+
+    // Every row keys on scheduleId, never on a promoter or a date range, so the reference
+    // survives the Stage 2 move to supervisorId + pax + dates[].
+    // Kapal Api: s-12 Econjaya Machang (4-5 Sep) and s-13 St. Rosyam Senawang (4-6 Sep).
+    // Jasmine:   s-09 Jaya Grocer Sunway Pyramid (27-31 Aug). Pusa Cream leads the week and
+    //            then collapses on the 31st, which is what check-in c-05 reports that day:
+    //            "Last day, stock low on Pusa Cream 5kg".
+    sales: [
+      { id: 'sa-01', scheduleId: 's-12', productId: 'p-ka-01', date: '2026-09-04', units: 62 },
+      { id: 'sa-02', scheduleId: 's-12', productId: 'p-ka-02', date: '2026-09-04', units: 41 },
+      { id: 'sa-03', scheduleId: 's-12', productId: 'p-ka-03', date: '2026-09-04', units: 28 },
+      { id: 'sa-04', scheduleId: 's-12', productId: 'p-ka-04', date: '2026-09-04', units: 15 },
+      { id: 'sa-05', scheduleId: 's-12', productId: 'p-ka-01', date: '2026-09-05', units: 78 },
+      { id: 'sa-06', scheduleId: 's-12', productId: 'p-ka-02', date: '2026-09-05', units: 52 },
+      { id: 'sa-07', scheduleId: 's-12', productId: 'p-ka-03', date: '2026-09-05', units: 33 },
+      { id: 'sa-08', scheduleId: 's-12', productId: 'p-ka-04', date: '2026-09-05', units: 19 },
+      { id: 'sa-09', scheduleId: 's-13', productId: 'p-ka-01', date: '2026-09-04', units: 54 },
+      { id: 'sa-10', scheduleId: 's-13', productId: 'p-ka-02', date: '2026-09-04', units: 37 },
+      { id: 'sa-11', scheduleId: 's-13', productId: 'p-ka-03', date: '2026-09-04', units: 24 },
+      { id: 'sa-12', scheduleId: 's-13', productId: 'p-ka-04', date: '2026-09-04', units: 12 },
+      { id: 'sa-13', scheduleId: 's-13', productId: 'p-ka-01', date: '2026-09-05', units: 69 },
+      { id: 'sa-14', scheduleId: 's-13', productId: 'p-ka-02', date: '2026-09-05', units: 45 },
+      { id: 'sa-15', scheduleId: 's-13', productId: 'p-ka-03', date: '2026-09-05', units: 30 },
+      { id: 'sa-16', scheduleId: 's-13', productId: 'p-ka-04', date: '2026-09-05', units: 17 },
+      { id: 'sa-17', scheduleId: 's-13', productId: 'p-ka-01', date: '2026-09-06', units: 46 },
+      { id: 'sa-18', scheduleId: 's-13', productId: 'p-ka-02', date: '2026-09-06', units: 31 },
+      { id: 'sa-19', scheduleId: 's-13', productId: 'p-ka-03', date: '2026-09-06', units: 21 },
+      { id: 'sa-20', scheduleId: 's-13', productId: 'p-ka-04', date: '2026-09-06', units: 11 },
+      { id: 'sa-21', scheduleId: 's-09', productId: 'p-js-01', date: '2026-08-27', units: 34 },
+      { id: 'sa-22', scheduleId: 's-09', productId: 'p-js-02', date: '2026-08-27', units: 29 },
+      { id: 'sa-23', scheduleId: 's-09', productId: 'p-js-03', date: '2026-08-27', units: 18 },
+      { id: 'sa-24', scheduleId: 's-09', productId: 'p-js-04', date: '2026-08-27', units: 11 },
+      { id: 'sa-25', scheduleId: 's-09', productId: 'p-js-01', date: '2026-08-28', units: 47 },
+      { id: 'sa-26', scheduleId: 's-09', productId: 'p-js-02', date: '2026-08-28', units: 38 },
+      { id: 'sa-27', scheduleId: 's-09', productId: 'p-js-03', date: '2026-08-28', units: 23 },
+      { id: 'sa-28', scheduleId: 's-09', productId: 'p-js-04', date: '2026-08-28', units: 14 },
+      { id: 'sa-29', scheduleId: 's-09', productId: 'p-js-01', date: '2026-08-29', units: 66 },
+      { id: 'sa-30', scheduleId: 's-09', productId: 'p-js-02', date: '2026-08-29', units: 55 },
+      { id: 'sa-31', scheduleId: 's-09', productId: 'p-js-03', date: '2026-08-29', units: 31 },
+      { id: 'sa-32', scheduleId: 's-09', productId: 'p-js-04', date: '2026-08-29', units: 20 },
+      { id: 'sa-33', scheduleId: 's-09', productId: 'p-js-01', date: '2026-08-30', units: 71 },
+      { id: 'sa-34', scheduleId: 's-09', productId: 'p-js-02', date: '2026-08-30', units: 58 },
+      { id: 'sa-35', scheduleId: 's-09', productId: 'p-js-03', date: '2026-08-30', units: 34 },
+      { id: 'sa-36', scheduleId: 's-09', productId: 'p-js-04', date: '2026-08-30', units: 22 },
+      { id: 'sa-37', scheduleId: 's-09', productId: 'p-js-01', date: '2026-08-31', units: 28 },
+      { id: 'sa-38', scheduleId: 's-09', productId: 'p-js-02', date: '2026-08-31', units: 33 },
+      { id: 'sa-39', scheduleId: 's-09', productId: 'p-js-03', date: '2026-08-31', units: 19 },
+      { id: 'sa-40', scheduleId: 's-09', productId: 'p-js-04', date: '2026-08-31', units: 12 }
     ],
     settings: {
       companyName: 'RoadCrew Activations',
@@ -248,6 +313,8 @@ window.RoadCrew = window.RoadCrew || {};
     users: function () { return collection('users'); },
     schedules: function () { return collection('schedules'); },
     checkins: function () { return collection('checkins'); },
+    products: function () { return collection('products'); },
+    sales: function () { return collection('sales'); },
     settings: function () { return load().settings; },
     byId: byId,
     upsert: upsert,
