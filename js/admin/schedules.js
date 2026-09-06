@@ -19,6 +19,7 @@ window.RoadCrew = window.RoadCrew || {};
   var draft = null;          // schedule being created or edited
   var pending = null;        // id queued for cancellation
   var month = { year: 0, m: 0 };
+  var page = 1;              // list view only - the month grid is not paged
 
   function byId(id) { return document.getElementById(id); }
   function asset(p) { return '../' + String(p || ''); }
@@ -133,8 +134,15 @@ window.RoadCrew = window.RoadCrew || {};
   }
 
   function renderList() {
-    var rows = filtered();
-    var total = R.db.schedules().length;
+    var matched = filtered();
+    // One slice feeds both the desktop grid and the mobile cards below, so the
+    // two views cannot disagree about which page you are looking at. paginate
+    // clamps, so a deletion that empties the last page drops you back a page
+    // instead of showing nothing.
+    var pageState = U.paginate(matched, page);
+    var rows = pageState.rows;
+    page = pageState.page;
+
     var today = U.todayISO();
     var htmlRows = '';
     var htmlCards = '';
@@ -196,11 +204,16 @@ window.RoadCrew = window.RoadCrew || {};
       '<div class="empty"><div class="empty-text">No schedules match these filters.</div></div>';
     byId('sched-cards').innerHTML = htmlCards ||
       '<div class="empty"><div class="empty-text">No schedules match these filters.</div></div>';
-    byId('sched-foot').textContent =
-      'Showing ' + rows.length + ' of ' + total + ' schedules · sorted by start date, newest first';
+    byId('sched-foot').innerHTML =
+      U.pagerHtml(pageState, 'schedules', 'sorted by start date, newest first');
 
     if (today) { /* today drives deriveStatus above */ }
   }
+
+  // Every path that changes what the list contains - rather than which page of
+  // it you are on - goes back to page 1. Filtering down to three rows while
+  // sitting on page 2 would otherwise show an empty table.
+  function resetPage() { page = 1; }
 
   // '19-20 Sep' | '12 Sep' | '30 Jul - 1 Aug'  (year dropped, as the table does)
   function shortRange(s) {
@@ -450,8 +463,13 @@ window.RoadCrew = window.RoadCrew || {};
       notes: draft.notes
     };
 
+    var isNew = !draft.id;
+
     R.db.upsert('schedules', record);
     closeDrawer();
+    // A new schedule sorts to the top, so go to page 1 to show it. An edit
+    // stays where it is, and so does the reader.
+    if (isNew) { resetPage(); }
     setView(view);
     U.toast('Schedule saved.', 'success');
   }
@@ -508,8 +526,23 @@ window.RoadCrew = window.RoadCrew || {};
 
     var filters = ['f-brand', 'f-region', 'f-promoter', 'f-status'];
     for (i = 0; i < filters.length; i++) {
-      on(filters[i], 'change', function () { setView(view); });
+      on(filters[i], 'change', function () { resetPage(); setView(view); });
     }
+
+    // The pager is rebuilt on every render, so the listener sits on the footer
+    // that survives instead of on the buttons that do not.
+    on('sched-foot', 'click', function (ev) {
+      var node = ev.target;
+      while (node && node !== this) {
+        var want = node.getAttribute && node.getAttribute('data-page');
+        if (want) {
+          page = U.pageFromClick(want, page);
+          renderList();
+          return;
+        }
+        node = node.parentNode;
+      }
+    });
 
     on('btn-new', 'click', function () { openDrawer(null); });
     on('drawer-close', 'click', closeDrawer);

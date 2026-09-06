@@ -259,9 +259,11 @@ window.RoadCrew = window.RoadCrew || {};
       ? 'Showing ' + state.from + DASH + state.to + ' of ' + state.total + ' ' + noun
       : 'No ' + noun + ' to show';
 
+    // The suffix describes how the rows are ordered, which is meaningless when
+    // there are none - "No schedules to show, sorted by start date" reads badly.
     var html =
       '<div class="pager-count">' + escapeHtml(count) +
-      (suffix ? ' &middot; ' + escapeHtml(suffix) : '') + '</div>';
+      (suffix && state.total ? ' &middot; ' + escapeHtml(suffix) : '') + '</div>';
 
     // One page needs no controls, but the count still earns its place - it is
     // how you tell a filter matched everything from a filter matching nothing.
