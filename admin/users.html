@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Users - RoadCrew</title>
+<link rel="icon" href="../img/logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+<div class="admin">
+
+  <!-- ============ SIDEBAR (desktop) ============ -->
+  <aside class="side">
+    <div class="side-brand">
+      <div class="side-mark">R</div>
+      <div class="side-word">RoadCrew</div>
+    </div>
+    <nav class="side-nav">
+      <a class="side-item" href="dashboard.html"><span class="side-item-initial">M</span><span class="side-item-label">Main</span></a>
+      <a class="side-item" href="schedules.html"><span class="side-item-initial">S</span><span class="side-item-label">Schedules</span></a>
+      <a class="side-item is-active" href="users.html"><span class="side-item-initial">U</span><span class="side-item-label">Users</span></a>
+      <a class="side-item" href="settings.html"><span class="side-item-initial">C</span><span class="side-item-label">Settings</span></a>
+    </nav>
+    <div class="side-spacer"></div>
+    <div class="side-foot">
+      <div class="side-avatar" id="side-initial">C</div>
+      <div class="side-who">
+        <div class="side-name" id="side-name">Coordinator</div>
+        <button class="side-logout" type="button" data-logout>Log out</button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+
+    <!-- ============ APP BAR (mobile, artboard 10) ============ -->
+    <header class="appbar">
+      <div class="appbar-mark">R</div>
+      <div class="appbar-title">Users</div>
+      <div class="appbar-avatar" id="appbar-initial">C</div>
+    </header>
+
+    <!-- ============ TOP BAR (desktop) ============ -->
+    <header class="topbar">
+      <div class="topbar-title">Users</div>
+      <div class="topbar-right">
+        <div class="date-pill" id="topbar-date">&nbsp;</div>
+        <div class="topbar-avatar" id="topbar-initial">C</div>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- Toolbar: region chips + add (artboard 10 puts both above the list) -->
+      <div class="toolbar">
+        <div class="chip-row" id="region-chips"></div>
+        <div class="toolbar-spacer"></div>
+        <button class="btn-new" type="button" id="btn-new">+ Add user</button>
+      </div>
+
+      <!-- Desktop table. .sched-table is the shared "card that hides below 768px"
+           wrapper from admin.css; the users grid itself is the base.css .table. -->
+      <div class="sched-table">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Name</th><th>Email</th><th>Phone</th>
+              <th>Region</th><th>Role</th><th>Status</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="user-rows"></tbody>
+        </table>
+      </div>
+
+      <!-- Mobile card list (artboard 10). .sched-cards only shows below 768px. -->
+      <div class="sched-cards" id="user-cards"></div>
+
+    </main>
+
+    <!-- ============ BOTTOM NAV (mobile) ============ -->
+    <nav class="botnav">
+      <a class="botnav-item" href="dashboard.html"><div class="botnav-glyph"></div><div class="botnav-label">Main</div></a>
+      <a class="botnav-item" href="schedules.html"><div class="botnav-glyph"></div><div class="botnav-label">Schedules</div></a>
+      <a class="botnav-item is-active" href="users.html"><div class="botnav-glyph botnav-glyph-round"></div><div class="botnav-label">Users</div></a>
+      <a class="botnav-item" href="settings.html"><div class="botnav-glyph botnav-glyph-diamond"></div><div class="botnav-label">Settings</div></a>
+    </nav>
+
+  </div>
+</div>
+
+<!-- ============ DRAWER (add / edit user) ============ -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-head">
+    <div class="drawer-title" id="drawer-title">Add user</div>
+    <button class="drawer-close" type="button" id="drawer-close">&#10005;</button>
+  </div>
+
+  <div class="drawer-body">
+    <div class="field">
+      <label class="field-label" for="u-name">Name <span class="req">*</span></label>
+      <input class="input" id="u-name" type="text" placeholder="Full name">
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="u-email">Email <span class="req">*</span></label>
+      <input class="input" id="u-email" type="email" placeholder="name@roadcrew.demo">
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="u-phone">Phone</label>
+      <input class="input" id="u-phone" type="text" placeholder="013-100 1000">
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="u-region">Region</label>
+      <select class="select" id="u-region"></select>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label" for="u-role">Role</label>
+        <select class="select" id="u-role">
+          <option value="staff">Staff</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label" for="u-status">Status</label>
+        <select class="select" id="u-status">
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="drawer-foot">
+    <button class="btn" type="button" id="u-cancel">Cancel</button>
+    <button class="btn btn-primary" type="button" id="u-save">Save</button>
+  </div>
+</aside>
+
+<!-- ============ CONFIRM MODAL ============ -->
+<div class="modal" id="confirm">
+  <div class="modal-box">
+    <div class="modal-title" id="confirm-title">Deactivate this user?</div>
+    <div class="modal-text" id="confirm-text"></div>
+    <div class="modal-foot">
+      <button class="btn" type="button" id="confirm-no">Keep active</button>
+      <button class="btn btn-danger" type="button" id="confirm-yes">Deactivate</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/util.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/admin/users.js"></script>
+</body>
+</html>
