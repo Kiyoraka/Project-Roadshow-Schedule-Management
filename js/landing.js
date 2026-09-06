@@ -352,6 +352,31 @@ window.RoadCrew = window.RoadCrew || {};
     }
   }
 
+  /* ----------------------------------------------------------- footer --- */
+
+  // Contact details come from Settings rather than being written into the markup,
+  // so editing the company profile updates the public footer too.
+  function renderFooter() {
+    var s = R.db.settings() || {};
+    var email = byId('footer-email');
+    var phone = byId('footer-phone');
+    var copy = byId('footer-copy');
+
+    if (email && s.contactEmail) {
+      email.textContent = s.contactEmail;
+      email.setAttribute('href', 'mailto:' + s.contactEmail);
+    }
+    if (phone && s.contactPhone) {
+      phone.textContent = s.contactPhone;
+      phone.setAttribute('href', 'tel:' + s.contactPhone.replace(/[^0-9+]/g, ''));
+    }
+    if (copy) {
+      var year = R.util.fromISO(R.util.todayISO()).getFullYear();
+      copy.textContent = '© ' + year + ' ' +
+        (s.companyName || 'RoadCrew Activations') + '. All rights reserved.';
+    }
+  }
+
   /* ------------------------------------------------------------- init --- */
 
   function init() {
@@ -367,6 +392,7 @@ window.RoadCrew = window.RoadCrew || {};
     wireNav();
     wireLogin();
     renderCards();
+    renderFooter();
     wireGate();
     wireReport();
 
