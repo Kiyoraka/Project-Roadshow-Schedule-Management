@@ -198,6 +198,108 @@ window.RoadCrew = window.RoadCrew || {};
     showToast(message, variant);
   }
 
+  /* ------------------------------------------------------------ paging -- */
+
+  // Schedules and Users both page a list of rows. The arithmetic lives here
+  // once rather than in each page script, because two copies of "which rows am
+  // I showing" is exactly how two lists drift apart - one gets the clamp fixed
+  // and the other does not.
+
+  var PAGE_SIZE = 10;
+
+  // Slices `rows` for `page` and reports what it did. The clamp is inside, so
+  // no caller can forget it: deleting the last row on the final page lands you
+  // on a page that has rows rather than on a blank one.
+  function paginate(rows, page, size) {
+    var total = rows.length;
+    var per = size || PAGE_SIZE;
+    var pages = Math.max(1, Math.ceil(total / per));
+    var current = Math.min(Math.max(1, page || 1), pages);
+    var start = (current - 1) * per;
+
+    return {
+      rows: rows.slice(start, start + per),
+      page: current,
+      pages: pages,
+      total: total,
+      from: total ? start + 1 : 0,
+      to: Math.min(start + per, total)
+    };
+  }
+
+  // Which page numbers to draw. Everything up to seven pages is shown in full;
+  // beyond that the middle collapses to an ellipsis so the control keeps a
+  // predictable width - 1 ... 4 5 6 ... 12. A 0 marks a gap.
+  function pageWindow(current, pages) {
+    var out = [];
+    var i;
+
+    if (pages <= 7) {
+      for (i = 1; i <= pages; i++) { out.push(i); }
+      return out;
+    }
+
+    var lo = Math.max(2, current - 1);
+    var hi = Math.min(pages - 1, current + 1);
+
+    out.push(1);
+    if (lo > 2) { out.push(0); }
+    for (i = lo; i <= hi; i++) { out.push(i); }
+    if (hi < pages - 1) { out.push(0); }
+    out.push(pages);
+    return out;
+  }
+
+  // The count line plus the buttons. `noun` names what is being counted, so the
+  // sentence reads "Showing 1-10 of 17 schedules". Buttons carry data-page and
+  // are picked up by the delegated click handler on each page, matching how
+  // every other control in the admin app is wired.
+  function pagerHtml(state, noun, suffix) {
+    var count = state.total
+      ? 'Showing ' + state.from + DASH + state.to + ' of ' + state.total + ' ' + noun
+      : 'No ' + noun + ' to show';
+
+    var html =
+      '<div class="pager-count">' + escapeHtml(count) +
+      (suffix ? ' &middot; ' + escapeHtml(suffix) : '') + '</div>';
+
+    // One page needs no controls, but the count still earns its place - it is
+    // how you tell a filter matched everything from a filter matching nothing.
+    if (state.pages < 2) { return html; }
+
+    var win = pageWindow(state.page, state.pages);
+    var btns =
+      '<button class="pager-btn" type="button" data-page="prev"' +
+      (state.page === 1 ? ' disabled' : '') + '>&lsaquo; Prev</button>';
+    var i;
+
+    for (i = 0; i < win.length; i++) {
+      if (win[i] === 0) {
+        btns += '<span class="pager-gap">&hellip;</span>';
+      } else {
+        btns += '<button class="pager-btn' +
+          (win[i] === state.page ? ' is-active' : '') +
+          '" type="button" data-page="' + win[i] + '">' + win[i] + '</button>';
+      }
+    }
+
+    btns +=
+      '<button class="pager-btn" type="button" data-page="next"' +
+      (state.page === state.pages ? ' disabled' : '') + '>Next &rsaquo;</button>';
+
+    return html + '<div class="pager-btns">' + btns + '</div>';
+  }
+
+  // Resolves what a clicked data-page value means against the current page.
+  // 'prev' and 'next' are relative; anything else is an absolute page number.
+  // Out-of-range values are handled by paginate's clamp, not here.
+  function pageFromClick(value, current) {
+    if (value === 'prev') { return current - 1; }
+    if (value === 'next') { return current + 1; }
+    var n = parseInt(value, 10);
+    return isNaN(n) ? current : n;
+  }
+
   R.util = {
     todayISO: todayISO,
     toISO: toISO,
@@ -211,7 +313,12 @@ window.RoadCrew = window.RoadCrew || {};
     uid: uid,
     initials: initials,
     escapeHtml: escapeHtml,
-    toast: toast
+    toast: toast,
+    PAGE_SIZE: PAGE_SIZE,
+    paginate: paginate,
+    pageWindow: pageWindow,
+    pagerHtml: pagerHtml,
+    pageFromClick: pageFromClick
   };
 
 })(window.RoadCrew);
