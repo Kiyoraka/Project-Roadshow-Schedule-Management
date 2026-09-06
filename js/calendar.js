@@ -119,18 +119,30 @@ window.RoadCrew = window.RoadCrew || {};
     return out;
   }
 
-  // Whole weeks: leading blanks before the 1st, trailing blanks after the last day.
-  function buildWeeks(year, month) {
-    var lead = firstWeekday(year, month);
+  // Whole weeks. weekStart is 0 for Sunday (admin) or 1 for Monday (the staff
+  // artboard). With fillAdjacent the leading and trailing cells carry the real
+  // adjacent-month day numbers, marked outside, instead of being blank - which
+  // is what artboard 05 shows.
+  function buildWeeks(year, month, weekStart, fillAdjacent) {
+    var lead = (firstWeekday(year, month) - weekStart + DAYS_PER_WEEK) % DAYS_PER_WEEK;
     var total = daysInMonth(year, month);
     var cellCount = Math.ceil((lead + total) / DAYS_PER_WEEK) * DAYS_PER_WEEK;
+    var prev = prevMonth(year, month);
+    var next = nextMonth(year, month);
+    var prevTotal = daysInMonth(prev.year, prev.month);
     var weeks = [];
     var week = [];
 
     for (var i = 0; i < cellCount; i++) {
       var dayNum = i - lead + 1;
-      if (dayNum < 1 || dayNum > total) {
-        week.push(null);
+      if (dayNum < 1) {
+        week.push(fillAdjacent
+          ? { day: prevTotal + dayNum, iso: isoOf(prev.year, prev.month, prevTotal + dayNum), outside: true }
+          : null);
+      } else if (dayNum > total) {
+        week.push(fillAdjacent
+          ? { day: dayNum - total, iso: isoOf(next.year, next.month, dayNum - total), outside: true }
+          : null);
       } else {
         week.push({ day: dayNum, iso: isoOf(year, month, dayNum) });
       }
@@ -142,10 +154,13 @@ window.RoadCrew = window.RoadCrew || {};
     return weeks;
   }
 
-  function headHtml() {
+  function headHtml(labels, weekStart) {
     var html = '<div class="rc-cal-head">';
-    for (var i = 0; i < WEEKDAYS.length; i++) {
-      html += '<div class="rc-cal-head-cell">' + WEEKDAYS[i] + '</div>';
+    for (var i = 0; i < DAYS_PER_WEEK; i++) {
+      var label = labels && labels.length === DAYS_PER_WEEK
+        ? labels[i]
+        : WEEKDAYS[(i + weekStart) % DAYS_PER_WEEK];
+      html += '<div class="rc-cal-head-cell">' + esc(label) + '</div>';
     }
     return html + '</div>';
   }
@@ -167,10 +182,17 @@ window.RoadCrew = window.RoadCrew || {};
       return '<div class="rc-cal-cell rc-cal-cell-blank"></div>';
     }
     var cls = 'rc-cal-cell';
+    if (cell.outside) { cls += ' rc-cal-cell-outside'; }
     if (cell.iso === ctx.today) { cls += ' rc-cal-cell-today'; }
     if (ctx.selectedDate && cell.iso === ctx.selectedDate) { cls += ' rc-cal-cell-selected'; }
 
+    // A day already carrying photo proof gets the artboard's small green tick.
+    var check = (ctx.checks && ctx.checks[cell.iso] && !cell.outside)
+      ? '<span class="rc-cal-check">&#10003;</span>'
+      : '';
+
     return '<div class="' + cls + '" data-day="' + cell.iso + '">' +
+             check +
              '<div class="rc-cal-daynum">' + cell.day + '</div>' +
              (inner || '') +
            '</div>';
@@ -281,20 +303,30 @@ window.RoadCrew = window.RoadCrew || {};
     if (!root) { return; }
 
     var o = opts || {};
+    var i;
     var n = normalize(o.year, o.month);
     var events = normalizeEvents(o.events);
     var mode = o.mode === 'admin' ? 'admin' : 'staff';
-    var weeks = buildWeeks(n.year, n.month);
+    var weekStart = o.weekStart === 1 ? 1 : 0;
+    var fillAdjacent = !!o.fillAdjacent;
+    var weeks = buildWeeks(n.year, n.month, weekStart, fillAdjacent);
+
+    var checks = {};
+    if (o.checks && o.checks.length) {
+      for (i = 0; i < o.checks.length; i++) { checks[o.checks[i]] = true; }
+    }
+
     var ctx = {
       today: R.util.todayISO(),
-      selectedDate: o.selectedDate || null
+      selectedDate: o.selectedDate || null,
+      checks: checks
     };
 
     var body = mode === 'admin'
       ? adminGridHtml(weeks, events, ctx)
       : staffGridHtml(weeks, events, ctx);
 
-    root.innerHTML = '<div class="rc-cal">' + headHtml() + body + '</div>';
+    root.innerHTML = '<div class="rc-cal">' + headHtml(o.dayLabels, weekStart) + body + '</div>';
     wire(root, o);
   }
 

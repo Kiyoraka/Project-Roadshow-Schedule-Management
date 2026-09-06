@@ -1,0 +1,401 @@
+/* RoadCrew - staff.css
+   Promoter screens: artboards 05 (My Calendar), 06 (Event + Upload), 07 (My Uploads).
+   All three are 390px designs; on a wider screen the column centres at 480px so it
+   still reads as a phone, per brief section 4.5.
+
+   Metrics carried from the canvas; navy/blue swapped for red tokens.
+   -------------------------------------------------------------------------- */
+
+body.staff { background: var(--surface-alt); }
+
+.phone {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-alt);
+  padding-bottom: var(--h-bottomnav);
+}
+
+/* --------------------------------------------------------------- header -- */
+
+.sheader {
+  height: var(--h-header);
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  flex: none;
+}
+.sheader-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  flex: none;
+  object-fit: cover;
+}
+.sheader-body { flex: 1; min-width: 0; }
+.sheader-name { font-size: 14px; font-weight: 700; }
+.sheader-sub { font-size: 11.5px; color: var(--ink-muted); }
+.sheader-logout {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  background: none;
+  border: 0;
+  padding: 0;
+}
+.sheader-logout:hover { color: var(--brand); }
+
+/* Event page uses a back button and a plain title instead of the profile row */
+.sheader-back {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: var(--r-ctl);
+  background: transparent;
+  display: grid;
+  place-items: center;
+  color: var(--ink-muted);
+  font-size: 15px;
+  flex: none;
+}
+.sheader-back:hover { background: var(--surface-alt); }
+.sheader-title { font-size: 15px; font-weight: 700; }
+
+.scontent {
+  flex: 1;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ----------------------------------------------------------- bottom nav -- */
+
+.sbotnav {
+  height: var(--h-bottomnav);
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  width: 100%;
+  max-width: 480px;
+  z-index: 30;
+}
+.sbotnav-item {
+  text-align: center;
+  color: var(--ink-faint);
+  background: none;
+  border: 0;
+  padding: 0;
+}
+.sbotnav-item.is-active { color: var(--brand); }
+.sbotnav-glyph {
+  width: 20px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-radius: var(--r-xs);
+  margin: 0 auto 3px;
+}
+.sbotnav-glyph-alt { width: 18px; }
+.sbotnav-glyph-round { width: 16px; height: 16px; border-radius: 50%; }
+.sbotnav-label { font-size: 10.5px; font-weight: 600; }
+.sbotnav-item.is-active .sbotnav-label { font-weight: 700; }
+
+/* ------------------------------------------------------- today card (05) */
+
+.today-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+.today-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+/* Artboard 05 sets "Today" as bare brand text; artboard 06 sets it as a pill. */
+.today-flag {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--brand);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.today-pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+  background: var(--brand-050);
+  color: var(--brand);
+}
+.today-name { font-size: 18px; font-weight: 700; }
+.today-name-lg { font-size: 20px; font-weight: 700; }
+.today-meta { font-size: 13px; color: var(--ink-muted); margin: 2px 0 16px; }
+.today-meta-tight { margin: 2px 0 10px; }
+.today-meta-lg { font-size: 13.5px; color: var(--ink-muted); margin: 4px 0 0; }
+.today-done {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--success);
+  margin-bottom: 12px;
+}
+
+/* ------------------------------------------------------ month card (05) -- */
+
+.month-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+.month-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.month-arrow {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: var(--r-ctl);
+  background: transparent;
+  display: grid;
+  place-items: center;
+  color: var(--ink-muted);
+  font-size: 13px;
+}
+.month-arrow:hover { background: var(--surface-alt); }
+.month-name { font-size: 15px; font-weight: 700; }
+
+/* The shared renderer is compacted here to the artboard's tight phone grid.
+   Note the today marker is a RING, not a filled disc, unlike the admin default. */
+.staff .rc-cal-head { gap: 2px; margin-bottom: 6px; }
+.staff .rc-cal-head-cell {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  letter-spacing: 0;
+  text-transform: none;
+}
+.staff .rc-cal-grid { gap: 2px; }
+.staff .rc-cal-cell {
+  min-height: 0;
+  padding: 9px 0;
+  border-radius: 0;
+  font-size: 13px;
+}
+.staff .rc-cal-cell:hover { background: transparent; }
+.staff .rc-cal-cell-selected { background: transparent; }
+.staff .rc-cal-daynum {
+  width: 28px;
+  height: 28px;
+  font-size: 13px;
+  font-weight: 400;
+}
+.staff .rc-cal-cell-outside .rc-cal-daynum { color: var(--disc); }
+.staff .rc-cal-cell-today .rc-cal-daynum {
+  background: transparent;
+  color: var(--brand);
+  border: 2px solid var(--brand);
+  border-radius: 50%;
+  font-weight: 700;
+}
+.staff .rc-cal-dots {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 1px;
+  margin-top: 0;
+  min-height: 0;
+  gap: 2px;
+}
+.staff .rc-cal-dot { width: 5px; height: 5px; }
+.rc-cal-check {
+  position: absolute;
+  top: 2px;
+  right: 8px;
+  font-size: 8px;
+  font-weight: 800;
+  color: var(--success);
+  line-height: 1;
+}
+
+/* -------------------------------------------------------- upcoming (05) -- */
+
+.up-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: 8px;
+}
+.up-list { display: flex; flex-direction: column; gap: 8px; }
+.up-row {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+}
+.up-row:hover { background: var(--surface-alt); }
+.up-date { text-align: center; width: 36px; flex: none; }
+.up-day { font-size: 16px; font-weight: 700; }
+.up-mon { font-size: 10px; font-weight: 600; color: var(--ink-muted); }
+.up-div { width: 1px; height: 28px; background: var(--line); flex: none; }
+.up-body { flex: 1; min-width: 0; }
+.up-name { font-size: 13.5px; font-weight: 600; }
+.up-time { font-size: 11.5px; color: var(--ink-muted); }
+.up-empty {
+  font-size: 12.5px;
+  color: var(--ink-muted);
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* ----------------------------------------------------- upload zone (06) -- */
+
+.drop {
+  background: var(--surface);
+  border: 2px dashed var(--brand-200);
+  border-radius: var(--r-card);
+  padding: 32px 20px;
+  text-align: center;
+  width: 100%;
+  display: block;
+  transition: border-color .15s ease, background .15s ease;
+}
+.drop:hover,
+.drop.is-drag { border-color: var(--brand); background: var(--brand-050); }
+.drop-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--brand-050-alt);
+  display: grid;
+  place-items: center;
+  margin: 0 auto 12px;
+}
+.drop-glyph {
+  width: 24px;
+  height: 18px;
+  border: 2.5px solid var(--brand);
+  border-radius: var(--r-xs);
+  position: relative;
+}
+.drop-glyph::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 7px;
+  height: 7px;
+  border: 2px solid var(--brand);
+  border-radius: 50%;
+}
+.drop-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.drop-sub { font-size: 12.5px; color: var(--ink-muted); }
+
+.drop-preview {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.note-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  margin-bottom: 6px;
+}
+.note-input { height: 44px; }
+
+/* ------------------------------------------------- photos strip (06) ----- */
+
+.shots-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: 8px;
+}
+.shots {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.shots::-webkit-scrollbar { display: none; }
+.shot { flex: none; width: 140px; }
+.shot-frame { position: relative; width: 140px; height: 105px; }
+.shot-img {
+  width: 140px;
+  height: 105px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+.shot-stamp {
+  position: absolute;
+  bottom: 6px;
+  left: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(140, 20, 32, .6);
+  padding: 2px 7px;
+  border-radius: var(--r-pill);
+}
+.shot-cap { font-size: 11px; color: var(--ink-muted); margin-top: 5px; }
+
+/* ----------------------------------------------------- my uploads (07) -- */
+
+.up-month { font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+.tile-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.tile-grid:last-child { margin-bottom: 0; }
+.tile-img {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 10px;
+  object-fit: cover;
+  background: var(--line-soft);
+}
+.tile-cap {
+  font-size: 10.5px;
+  color: var(--ink-muted);
+  margin-top: 4px;
+  line-height: 1.3;
+}
