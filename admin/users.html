@@ -56,12 +56,15 @@
 
     <main class="content">
 
-      <!-- Toolbar: region chips + add (artboard 10 puts both above the list) -->
+      <!-- Toolbar: region chips + add (artboard 10 puts both above the list).
+           A second chip row appears beneath when a region is picked, holding that
+           region's sub-regions - the level people actually work in. -->
       <div class="toolbar">
         <div class="chip-row" id="region-chips"></div>
         <div class="toolbar-spacer"></div>
         <button class="btn-new" type="button" id="btn-new">+ Add user</button>
       </div>
+      <div class="chip-row chip-row-sub" id="subregion-chips" hidden></div>
 
       <!-- Desktop table. .sched-table is the shared "card that hides below 768px"
            wrapper from admin.css; the users grid itself is the base.css .table. -->
@@ -120,9 +123,12 @@
       <input class="input" id="u-phone" type="text" placeholder="013-100 1000">
     </div>
 
+    <!-- One select rather than a region-then-sub-region cascade: the options are
+         grouped under their region, so both levels are readable and there is no
+         second control to keep in step. -->
     <div class="field">
-      <label class="field-label" for="u-region">Region</label>
-      <select class="select" id="u-region"></select>
+      <label class="field-label" for="u-subregion">Sub-region</label>
+      <select class="select" id="u-subregion"></select>
     </div>
 
     <div class="field-row">
@@ -130,6 +136,7 @@
         <label class="field-label" for="u-role">Role</label>
         <select class="select" id="u-role">
           <option value="staff">Staff</option>
+          <option value="client">Client</option>
           <option value="admin">Admin</option>
         </select>
       </div>
@@ -140,6 +147,14 @@
           <option value="inactive">Inactive</option>
         </select>
       </div>
+    </div>
+
+    <!-- Client service only. A brand is what scopes their portal, so the field
+         appears with the role and disappears with it. -->
+    <div class="field" id="u-brand-field" hidden>
+      <label class="field-label" for="u-brand">Brand <span class="req">*</span></label>
+      <select class="select" id="u-brand"></select>
+      <div class="caption">Client service sees and edits only this brand&rsquo;s schedules.</div>
     </div>
   </div>
 

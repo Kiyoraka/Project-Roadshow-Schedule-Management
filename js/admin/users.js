@@ -16,7 +16,8 @@ window.RoadCrew = window.RoadCrew || {};
 
   var U = R.util;
 
-  var region = '';     // '' = All, otherwise a region id
+  var region = '';     // '' = All, otherwise a region id (top level)
+  var subregion = '';  // '' = every sub-region of the picked region
   var draft = null;    // user being created or edited
   var pending = null;  // id queued for deactivation
   var page = 1;
@@ -36,8 +37,35 @@ window.RoadCrew = window.RoadCrew || {};
     return rec ? rec.name : '';
   }
 
+  // The table has one Region column but the tree has two levels, so the cell
+  // carries both: the sub-region people actually work in, and its region's short
+  // code behind it. Nobody assigned anywhere - the admin, and every client service
+  // account, who work by brand rather than by patch - reads as all regions.
   function regionLabel(u) {
-    return nameOf('regions', u.regionId) || 'All regions';
+    var sub = u.subregionId ? R.db.byId('subregions', u.subregionId) : null;
+    if (!sub) { return 'All regions'; }
+    var parent = R.db.byId('regions', sub.regionId);
+    var code = parent ? (parent.code || parent.name) : '';
+    return code ? sub.name + ' · ' + code : sub.name;
+  }
+
+  function brandLabel(u) {
+    return u.brandId ? nameOf('brands', u.brandId) : '';
+  }
+
+  function subregionsOf(regionId) {
+    var all = R.db.subregions();
+    var out = [];
+    var i;
+    for (i = 0; i < all.length; i++) {
+      if (all[i] && all[i].regionId === regionId) { out.push(all[i]); }
+    }
+    return out;
+  }
+
+  function inRegion(subregionId, regionId) {
+    var sub = subregionId ? R.db.byId('subregions', subregionId) : null;
+    return !!sub && sub.regionId === regionId;
   }
 
   /* ---------------------------------------------------------------- counts -- */
@@ -72,28 +100,58 @@ window.RoadCrew = window.RoadCrew || {};
 
   /* --------------------------------------------------------------- filter -- */
 
+  // The narrower filter wins. Picking a sub-region means that sub-region exactly;
+  // picking only a region means every sub-region under it. Either way, somebody
+  // with no sub-region at all is only ever visible under All - which is right,
+  // because the admin and the client-service desk are not assigned to a patch.
   function visible() {
     var all = R.db.users();
     var out = [];
     var i;
     for (i = 0; i < all.length; i++) {
-      if (region && all[i].regionId !== region) { continue; }
+      if (subregion) {
+        if (all[i].subregionId !== subregion) { continue; }
+      } else if (region) {
+        if (!inRegion(all[i].subregionId, region)) { continue; }
+      }
       out.push(all[i]);
     }
     return out;
   }
 
+  function chipHtml(attr, value, label, active) {
+    return '<button class="chip' + (active ? ' is-active' : '') + '" type="button" ' +
+      attr + '="' + U.escapeHtml(value) + '">' + U.escapeHtml(label) + '</button>';
+  }
+
   function renderChips() {
     var regions = R.db.regions();
-    var html = '<button class="chip' + (region === '' ? ' is-active' : '') +
-               '" type="button" data-region="">All</button>';
+    var html = chipHtml('data-region', '', 'All', region === '');
     var i;
     for (i = 0; i < regions.length; i++) {
-      html += '<button class="chip' + (regions[i].id === region ? ' is-active' : '') +
-              '" type="button" data-region="' + U.escapeHtml(regions[i].id) + '">' +
-              U.escapeHtml(regions[i].name) + '</button>';
+      html += chipHtml('data-region', regions[i].id, regions[i].name, regions[i].id === region);
     }
     byId('region-chips').innerHTML = html;
+
+    // The second row only exists once a region is picked. Showing every
+    // sub-region in the country at once would be a wall of chips that says less
+    // than the region row above it.
+    var subRow = byId('subregion-chips');
+    if (!subRow) { return; }
+
+    if (!region) {
+      subRow.innerHTML = '';
+      subRow.hidden = true;
+      return;
+    }
+
+    var subs = subregionsOf(region);
+    var subHtml = chipHtml('data-subregion', '', 'All of ' + nameOf('regions', region), subregion === '');
+    for (i = 0; i < subs.length; i++) {
+      subHtml += chipHtml('data-subregion', subs[i].id, subs[i].name, subs[i].id === subregion);
+    }
+    subRow.innerHTML = subHtml;
+    subRow.hidden = false;
   }
 
   /* ----------------------------------------------------------------- list -- */
@@ -139,7 +197,11 @@ window.RoadCrew = window.RoadCrew || {};
           '<td class="muted">' + U.escapeHtml(u.email) + '</td>' +
           '<td class="muted">' + U.escapeHtml(u.phone) + '</td>' +
           '<td>' + U.escapeHtml(regionLabel(u)) + '</td>' +
-          '<td>' + U.escapeHtml(cap(u.role)) + '</td>' +
+          '<td>' + U.escapeHtml(cap(u.role)) +
+            (brandLabel(u)
+              ? '<div class="caption">' + U.escapeHtml(brandLabel(u)) + '</div>'
+              : '') +
+          '</td>' +
           '<td>' + statusBadge(u) + '</td>' +
           '<td>' +
             '<div class="sched-actions">' +
@@ -160,7 +222,7 @@ window.RoadCrew = window.RoadCrew || {};
           '<div class="feed-who">' +
             '<div class="feed-name">' + U.escapeHtml(u.name) + '</div>' +
             '<div class="feed-place">' +
-              U.escapeHtml(regionLabel(u) + ' · ' + u.phone) +
+              U.escapeHtml((brandLabel(u) || regionLabel(u)) + ' · ' + u.phone) +
             '</div>' +
           '</div>' +
           '<div style="' + RIGHT + '">' +
@@ -193,23 +255,53 @@ window.RoadCrew = window.RoadCrew || {};
       email: '',
       password: 'admin123',
       role: 'staff',
-      regionId: '',
+      subregionId: '',
+      brandId: '',
       phone: '',
       status: 'active',
       avatar: 'img/avatar-01.svg'
     };
   }
 
-  function regionOptions(selected) {
+  // Sub-regions grouped under their region, so one control shows both levels.
+  // A region with nothing under it is skipped rather than rendered as an empty
+  // heading nobody can choose from.
+  function subregionOptions(selected) {
     var regions = R.db.regions();
     var html = '<option value="">All regions</option>';
-    var i;
+    var i, j;
     for (i = 0; i < regions.length; i++) {
-      html += '<option value="' + U.escapeHtml(regions[i].id) + '"' +
-              (regions[i].id === selected ? ' selected' : '') + '>' +
-              U.escapeHtml(regions[i].name) + '</option>';
+      var subs = subregionsOf(regions[i].id);
+      if (!subs.length) { continue; }
+      html += '<optgroup label="' + U.escapeHtml(regions[i].name) + '">';
+      for (j = 0; j < subs.length; j++) {
+        html += '<option value="' + U.escapeHtml(subs[j].id) + '"' +
+                (subs[j].id === selected ? ' selected' : '') + '>' +
+                U.escapeHtml(subs[j].name) + '</option>';
+      }
+      html += '</optgroup>';
     }
     return html;
+  }
+
+  function brandOptions(selected) {
+    var brands = R.db.brands();
+    var html = '<option value="">Pick a brand</option>';
+    var i;
+    for (i = 0; i < brands.length; i++) {
+      html += '<option value="' + U.escapeHtml(brands[i].id) + '"' +
+              (brands[i].id === selected ? ' selected' : '') + '>' +
+              U.escapeHtml(brands[i].name) + '</option>';
+    }
+    return html;
+  }
+
+  // The brand field belongs to the client role and to nothing else, so it follows
+  // the role select rather than sitting there greyed out.
+  function syncBrandField() {
+    var isClient = byId('u-role').value === 'client';
+    var wrap = byId('u-brand-field');
+    if (wrap) { wrap.hidden = !isClient; }
   }
 
   function openDrawer(id) {
@@ -222,7 +314,8 @@ window.RoadCrew = window.RoadCrew || {};
         email: existing.email,
         password: existing.password,
         role: existing.role,
-        regionId: existing.regionId || '',
+        subregionId: existing.subregionId || '',
+        brandId: existing.brandId || '',
         phone: existing.phone,
         status: existing.status,
         avatar: existing.avatar
@@ -236,10 +329,13 @@ window.RoadCrew = window.RoadCrew || {};
     byId('u-name').value = draft.name;
     byId('u-email').value = draft.email;
     byId('u-phone').value = draft.phone;
-    byId('u-region').innerHTML = regionOptions(draft.regionId);
-    byId('u-region').value = draft.regionId;
+    byId('u-subregion').innerHTML = subregionOptions(draft.subregionId);
+    byId('u-subregion').value = draft.subregionId;
+    byId('u-brand').innerHTML = brandOptions(draft.brandId);
+    byId('u-brand').value = draft.brandId;
     byId('u-role').value = draft.role;
     byId('u-status').value = draft.status;
+    syncBrandField();
 
     byId('drawer').className = 'drawer is-open';
     byId('drawer').setAttribute('aria-hidden', 'false');
@@ -259,8 +355,9 @@ window.RoadCrew = window.RoadCrew || {};
     var name = byId('u-name').value.replace(/^\s+|\s+$/g, '');
     var email = byId('u-email').value.replace(/^\s+|\s+$/g, '');
     var phone = byId('u-phone').value.replace(/^\s+|\s+$/g, '');
-    var regionId = byId('u-region').value;
+    var subregionId = byId('u-subregion').value;
     var role = byId('u-role').value;
+    var brandId = role === 'client' ? byId('u-brand').value : '';
     var status = byId('u-status').value;
 
     if (!name) {
@@ -269,6 +366,14 @@ window.RoadCrew = window.RoadCrew || {};
     }
     if (!email) {
       U.toast('An email is required.', 'danger');
+      return;
+    }
+
+    // A client with no brand would sign in to a portal scoped to nothing and see
+    // an empty list with no way to explain itself, so the brand is required the
+    // moment the role is.
+    if (role === 'client' && !brandId) {
+      U.toast('Client service needs a brand to work on.', 'danger');
       return;
     }
 
@@ -285,7 +390,8 @@ window.RoadCrew = window.RoadCrew || {};
       email: email,
       password: draft.password || 'admin123',
       role: role,
-      regionId: regionId || null,
+      subregionId: subregionId || null,
+      brandId: brandId || null,
       phone: phone,
       status: status,
       avatar: draft.avatar || 'img/avatar-01.svg'
@@ -355,11 +461,29 @@ window.RoadCrew = window.RoadCrew || {};
       outs[i].addEventListener('click', function () { R.auth.logout(); });
     }
 
+    // Changing the region clears the sub-region with it - the old one belonged to
+    // a region nobody is looking at any more, and leaving it set would show an
+    // empty list under a chip row that cannot explain why.
     byId('region-chips').addEventListener('click', function (ev) {
       var node = ev.target;
       while (node && node !== this) {
         if (node.getAttribute && node.getAttribute('data-region') !== null) {
           region = node.getAttribute('data-region');
+          subregion = '';
+          resetPage();
+          renderChips();
+          render();
+          return;
+        }
+        node = node.parentNode;
+      }
+    });
+
+    byId('subregion-chips').addEventListener('click', function (ev) {
+      var node = ev.target;
+      while (node && node !== this) {
+        if (node.getAttribute && node.getAttribute('data-subregion') !== null) {
+          subregion = node.getAttribute('data-subregion');
           resetPage();
           renderChips();
           render();
@@ -388,6 +512,7 @@ window.RoadCrew = window.RoadCrew || {};
     on('drawer-close', 'click', closeDrawer);
     on('u-cancel', 'click', closeDrawer);
     on('scrim', 'click', closeDrawer);
+    on('u-role', 'change', syncBrandField);
     on('u-save', 'click', saveDraft);
 
     on('confirm-no', 'click', closeConfirm);
