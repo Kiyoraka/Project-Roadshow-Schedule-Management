@@ -38,9 +38,26 @@ window.RoadCrew = window.RoadCrew || {};
     return rec ? rec.name : '';
   }
 
-  function regionOfOutlet(outletId) {
+  // An outlet knows its sub-region; the region above it is one more hop. Both
+  // are needed - the filter bar offers the region, the table shows the sub-region.
+  function subregionOfOutlet(outletId) {
     var o = R.db.byId('outlets', outletId);
-    return o ? o.regionId : null;
+    return o ? o.subregionId : null;
+  }
+
+  function regionOfSubregion(subregionId) {
+    var sr = subregionId ? R.db.byId('subregions', subregionId) : null;
+    return sr ? sr.regionId : null;
+  }
+
+  function subregionsOf(regionId) {
+    var all = R.db.subregions();
+    var out = [];
+    var i;
+    for (i = 0; i < all.length; i++) {
+      if (all[i] && all[i].regionId === regionId) { out.push(all[i]); }
+    }
+    return out;
   }
 
   /* -------------------------------------------------------------- filter -- */
@@ -55,9 +72,23 @@ window.RoadCrew = window.RoadCrew || {};
     el.innerHTML = html;
   }
 
+  // The sub-region list follows whichever region is picked. With no region
+  // chosen it offers every sub-region in the country, so the narrower filter is
+  // still reachable in one step for anyone who knows the name they want.
+  function refreshSubregionFilter() {
+    var el = byId('f-subregion');
+    if (!el) { return; }
+    var keep = el.value;
+    var region = byId('f-region').value;
+    fillSelect(el, 'Sub-region', region ? subregionsOf(region) : R.db.subregions());
+    el.value = keep;
+    if (el.value !== keep) { el.value = ''; }
+  }
+
   function buildFilters() {
     fillSelect(byId('f-brand'), 'Brand', R.db.brands());
     fillSelect(byId('f-region'), 'Region', R.db.regions());
+    refreshSubregionFilter();
 
     var staff = [];
     var users = R.db.users();
@@ -78,6 +109,7 @@ window.RoadCrew = window.RoadCrew || {};
   function filtered() {
     var brand = byId('f-brand').value;
     var region = byId('f-region').value;
+    var sub = byId('f-subregion') ? byId('f-subregion').value : '';
     var promoter = byId('f-promoter').value;
     var status = byId('f-status').value;
 
@@ -87,8 +119,10 @@ window.RoadCrew = window.RoadCrew || {};
 
     for (i = 0; i < all.length; i++) {
       var s = all[i];
+      var srId = subregionOfOutlet(s.outletId);
       if (brand && s.brandId !== brand) { continue; }
-      if (region && regionOfOutlet(s.outletId) !== region) { continue; }
+      if (region && regionOfSubregion(srId) !== region) { continue; }
+      if (sub && srId !== sub) { continue; }
       if (promoter && s.spIds.indexOf(promoter) === -1) { continue; }
       if (status && U.deriveStatus(s) !== status) { continue; }
       out.push(s);
@@ -162,7 +196,7 @@ window.RoadCrew = window.RoadCrew || {};
           '<div class="sched-dates">' + U.escapeHtml(shortRange(s)) + '</div>' +
           '<div>' + brandBadge(s) + '</div>' +
           '<div>' + U.escapeHtml(nameOf('outlets', s.outletId)) + '</div>' +
-          '<div class="sched-dim">' + U.escapeHtml(nameOf('regions', regionOfOutlet(s.outletId))) + '</div>' +
+          '<div class="sched-dim">' + U.escapeHtml(nameOf('subregions', subregionOfOutlet(s.outletId))) + '</div>' +
           '<div>' + peopleCell(s) + '</div>' +
           '<div class="sched-dim">' + U.escapeHtml(s.shift) + '</div>' +
           '<div>' + statusBadge(s) + '</div>' +
@@ -175,7 +209,7 @@ window.RoadCrew = window.RoadCrew || {};
 
       // Mobile card (artboard 09). A cancelled card shows its note in place of
       // the shift and drops the promoter row, exactly as the artboard does.
-      var meta = shortRange(s) + ' · ' + nameOf('regions', regionOfOutlet(s.outletId)) +
+      var meta = shortRange(s) + ' · ' + nameOf('subregions', subregionOfOutlet(s.outletId)) +
                  ' · ' + (cancelled ? (s.notes || 'Cancelled') : s.shift);
       var who = '';
       if (!cancelled) {
@@ -273,10 +307,13 @@ window.RoadCrew = window.RoadCrew || {};
     var today = U.todayISO();
     var brands = R.db.brands();
     var regions = R.db.regions();
+    var firstRegion = regions.length ? regions[0].id : '';
+    var firstSubs = firstRegion ? subregionsOf(firstRegion) : [];
     return {
       id: '',
       brandId: brands.length ? brands[0].id : '',
-      regionId: regions.length ? regions[0].id : '',
+      regionId: firstRegion,
+      subregionId: firstSubs.length ? firstSubs[0].id : '',
       outletId: '',
       spIds: [],
       startDate: today,
@@ -294,7 +331,11 @@ window.RoadCrew = window.RoadCrew || {};
       draft = {
         id: existing.id,
         brandId: existing.brandId,
-        regionId: regionOfOutlet(existing.outletId),
+        // Neither level is stored on the schedule - both are derived from the
+        // outlet every time the drawer opens, so moving an outlet to a different
+        // sub-region cannot leave old schedules pointing at the wrong branch.
+        subregionId: subregionOfOutlet(existing.outletId),
+        regionId: regionOfSubregion(subregionOfOutlet(existing.outletId)),
         outletId: existing.outletId,
         spIds: existing.spIds.slice(),
         startDate: existing.startDate,
@@ -312,6 +353,7 @@ window.RoadCrew = window.RoadCrew || {};
     fillSelect(byId('d-brand'), '', R.db.brands());
     byId('d-brand').innerHTML = optionsFor(R.db.brands(), draft.brandId);
     byId('d-region').innerHTML = optionsFor(R.db.regions(), draft.regionId);
+    refreshSubregions();
     refreshOutlets();
 
     byId('d-start').value = draft.startDate;
@@ -344,20 +386,37 @@ window.RoadCrew = window.RoadCrew || {};
     return html;
   }
 
+  // Middle rung of the cascade. A region with no sub-regions yet leaves the
+  // select empty rather than borrowing another region's, because picking one
+  // there would file the schedule under the wrong branch.
+  function refreshSubregions() {
+    var subs = subregionsOf(draft.regionId);
+    var stillValid = false;
+    var i;
+    for (i = 0; i < subs.length; i++) {
+      if (subs[i].id === draft.subregionId) { stillValid = true; }
+    }
+    if (!stillValid) { draft.subregionId = subs.length ? subs[0].id : ''; }
+    byId('d-subregion').innerHTML = optionsFor(subs, draft.subregionId);
+  }
+
   function refreshOutlets() {
     var outlets = R.db.outlets();
-    var inRegion = [];
+    var inSub = [];
     var i;
     for (i = 0; i < outlets.length; i++) {
-      if (outlets[i].regionId === draft.regionId) { inRegion.push(outlets[i]); }
+      if (outlets[i].subregionId === draft.subregionId) { inSub.push(outlets[i]); }
     }
-    if (!inRegion.length) { inRegion = outlets; }
+    // The original fallback: rather than an empty picker with no way forward,
+    // an empty sub-region offers every outlet and the save writes whatever is
+    // chosen. Kept because a half-built region tree is a real state now.
+    if (!inSub.length) { inSub = outlets; }
     var stillValid = false;
-    for (i = 0; i < inRegion.length; i++) {
-      if (inRegion[i].id === draft.outletId) { stillValid = true; }
+    for (i = 0; i < inSub.length; i++) {
+      if (inSub[i].id === draft.outletId) { stillValid = true; }
     }
-    if (!stillValid) { draft.outletId = inRegion[0].id; }
-    byId('d-outlet').innerHTML = optionsFor(inRegion, draft.outletId);
+    if (!stillValid) { draft.outletId = inSub.length ? inSub[0].id : ''; }
+    byId('d-outlet').innerHTML = optionsFor(inSub, draft.outletId);
   }
 
   // Every other live schedule this promoter already holds that overlaps the draft.
@@ -383,7 +442,7 @@ window.RoadCrew = window.RoadCrew || {};
     for (i = 0; i < users.length; i++) {
       var u = users[i];
       if (u.role !== 'staff') { continue; }
-      if (u.regionId !== draft.regionId) { continue; }
+      if (u.subregionId !== draft.subregionId) { continue; }
 
       var picked = draft.spIds.indexOf(u.id) !== -1;
       // Rule 9 survives: a deactivated promoter cannot be added to new work,
@@ -391,7 +450,7 @@ window.RoadCrew = window.RoadCrew || {};
       var blocked = u.status === 'inactive' && !picked;
 
       var clash = clashesFor(u.id);
-      var meta = nameOf('regions', u.regionId);
+      var meta = nameOf('subregions', u.subregionId);
       if (u.status === 'inactive') { meta += ' · Inactive'; }
       if (clash.length) {
         meta += ' · Booked ' + shortRange(clash[0]);
@@ -529,7 +588,13 @@ window.RoadCrew = window.RoadCrew || {};
       });
     }
 
-    var filters = ['f-brand', 'f-region', 'f-promoter', 'f-status'];
+    // Registered BEFORE the shared filter handler below, because listeners on the
+    // same element fire in the order they were added. Narrowing the region has to
+    // rebuild the sub-region list first, or the re-render reads a sub-region that
+    // the new list no longer offers.
+    on('f-region', 'change', refreshSubregionFilter);
+
+    var filters = ['f-brand', 'f-region', 'f-subregion', 'f-promoter', 'f-status'];
     for (i = 0; i < filters.length; i++) {
       on(filters[i], 'change', function () { resetPage(); setView(view); });
     }
@@ -571,8 +636,19 @@ window.RoadCrew = window.RoadCrew || {};
     });
 
     on('d-brand', 'change', function (ev) { draft.brandId = ev.target.value; });
+    // Both rungs clear the promoter picks: the people who cover Central are not
+    // the people who cover Sarawak, so carrying a selection across would attach
+    // somebody to work nowhere near them.
     on('d-region', 'change', function (ev) {
       draft.regionId = ev.target.value;
+      draft.subregionId = '';
+      draft.spIds = [];
+      refreshSubregions();
+      refreshOutlets();
+      renderPromoters();
+    });
+    on('d-subregion', 'change', function (ev) {
+      draft.subregionId = ev.target.value;
       draft.spIds = [];
       refreshOutlets();
       renderPromoters();

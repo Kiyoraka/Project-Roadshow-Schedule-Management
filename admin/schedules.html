@@ -65,6 +65,7 @@
         <div class="toolbar-filters">
           <select class="filter" id="f-brand"></select>
           <select class="filter" id="f-region"></select>
+          <select class="filter" id="f-subregion"></select>
           <select class="filter" id="f-promoter"></select>
           <select class="filter" id="f-status"></select>
         </div>
@@ -128,15 +129,22 @@
       <select class="select" id="d-brand"></select>
     </div>
 
+    <!-- Region narrows the sub-region, which narrows the outlet. Three rungs,
+         each rebuilt by the one above it. -->
     <div class="field-row">
       <div class="field">
         <label class="field-label" for="d-region">Region <span class="req">*</span></label>
         <select class="select" id="d-region"></select>
       </div>
       <div class="field">
-        <label class="field-label" for="d-outlet">Outlet <span class="req">*</span></label>
-        <select class="select" id="d-outlet"></select>
+        <label class="field-label" for="d-subregion">Sub-region <span class="req">*</span></label>
+        <select class="select" id="d-subregion"></select>
       </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="d-outlet">Outlet <span class="req">*</span></label>
+      <select class="select" id="d-outlet"></select>
     </div>
 
     <div class="field-row">
