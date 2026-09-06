@@ -202,12 +202,173 @@ window.RoadCrew = window.RoadCrew || {};
     return out;
   }
 
+  /* --------------------------------------------------------- chart marks -- */
+
+  function esc(v) { return R.util.escapeHtml(v); }
+
+  // A bar rounded only at its data end and anchored flat to the baseline.
+  function barPath(x, y0, w, h, r) {
+    var rad = Math.min(r, w / 2, h);
+    if (h <= 0) { return ''; }
+    var top = y0 - h;
+    return 'M' + x + ' ' + y0 +
+           'L' + x + ' ' + (top + rad) +
+           'Q' + x + ' ' + top + ' ' + (x + rad) + ' ' + top +
+           'L' + (x + w - rad) + ' ' + top +
+           'Q' + (x + w) + ' ' + top + ' ' + (x + w) + ' ' + (top + rad) +
+           'L' + (x + w) + ' ' + y0 + 'Z';
+  }
+
+  function hBarPath(x, y, w, h, r) {
+    var rad = Math.min(r, h / 2, w);
+    if (w <= 0) { return ''; }
+    return 'M' + x + ' ' + y +
+           'L' + (x + w - rad) + ' ' + y +
+           'Q' + (x + w) + ' ' + y + ' ' + (x + w) + ' ' + (y + rad) +
+           'L' + (x + w) + ' ' + (y + h - rad) +
+           'Q' + (x + w) + ' ' + (y + h) + ' ' + (x + w - rad) + ' ' + (y + h) +
+           'L' + x + ' ' + (y + h) + 'Z';
+  }
+
+  // Round a maximum up to a friendly axis top.
+  function niceTop(max) {
+    if (max <= 0) { return 10; }
+    var step = Math.pow(10, Math.floor(Math.log(max) / Math.LN10)) / 2;
+    return Math.ceil(max / step) * step;
+  }
+
+  // CHART 1 - units per day. Seven discrete days, so bars rather than a line.
+  // One series, so the brand hue carries identity and length carries magnitude;
+  // no legend is needed because the block title names the series.
+  function daysChartSvg(data) {
+    var W = 660, H = 214;
+    var padL = 40, padR = 8, padT = 18, padB = 30;
+    var plotW = W - padL - padR;
+    var plotH = H - padT - padB;
+    var y0 = padT + plotH;
+    var top = niceTop(data.peak);
+    var colW = plotW / data.week.length;
+    var barW = Math.round(colW * 0.56);
+    var color = data.brand.color;
+    var i;
+
+    var svg = '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
+              'aria-label="Units sampled per day">';
+
+    // Recessive gridlines, and the axis scale on the left.
+    for (i = 0; i <= 2; i++) {
+      var val = top * (i / 2);
+      var gy = y0 - (plotH * (i / 2));
+      svg += '<line class="chart-grid" x1="' + padL + '" y1="' + gy + '" x2="' + (W - padR) + '" y2="' + gy + '"></line>';
+      svg += '<text class="chart-axis" x="' + (padL - 8) + '" y="' + (gy + 4) + '" text-anchor="end">' + Math.round(val) + '</text>';
+    }
+
+    for (i = 0; i < data.week.length; i++) {
+      var d = data.week[i];
+      var cx = padL + colW * i;
+      var bx = Math.round(cx + (colW - barW) / 2);
+      var h = top ? Math.round((d.units / top) * plotH) : 0;
+
+      svg += '<g class="chart-col" data-tip="' + esc(d.dow + ' ' + d.day + ' - ' + d.units + ' units') + '">';
+      svg += '<rect class="chart-hit" x="' + cx + '" y="' + padT + '" width="' + colW + '" height="' + plotH + '"></rect>';
+
+      if (d.units > 0) {
+        svg += '<path class="chart-bar" d="' + barPath(bx, y0, barW, h, 4) + '" fill="' + color + '"></path>';
+      } else {
+        // A zero day is drawn as a flat stub so the day reads as zero, not missing.
+        svg += '<rect x="' + bx + '" y="' + (y0 - 2) + '" width="' + barW + '" height="2" fill="var(--line-strong)"></rect>';
+      }
+
+      // Selective direct labelling: the peak only. Everything else is on hover.
+      if (d.isPeak && d.units > 0) {
+        svg += '<text class="chart-value" x="' + (bx + barW / 2) + '" y="' + (y0 - h - 6) + '" text-anchor="middle">' + d.units + '</text>';
+      }
+
+      svg += '<text class="chart-axis" x="' + (cx + colW / 2) + '" y="' + (y0 + 18) + '" text-anchor="middle">' +
+             esc(d.dow) + ' ' + d.day + '</text>';
+      svg += '</g>';
+    }
+
+    return svg + '</svg>';
+  }
+
+  // CHART 2 - product popularity, ranked. Every bar takes the same hue at the same
+  // step: length alone encodes the value, so colour never implies an extra meaning.
+  function productsChartSvg(data) {
+    var rowH = 34, gap = 6;
+    var W = 660;
+    var H = data.products.length * (rowH + gap);
+    var labelW = 190, valueW = 54;
+    var trackW = W - labelW - valueW - 12;
+    var max = data.products.length ? data.products[0].units : 0;
+    var color = data.brand.color;
+    var i;
+
+    var svg = '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
+              'aria-label="Units sampled per product">';
+
+    for (i = 0; i < data.products.length; i++) {
+      var p = data.products[i];
+      var y = i * (rowH + gap);
+      var barH = 18;
+      var by = y + (rowH - barH) / 2;
+      var w = max ? Math.round((p.units / max) * trackW) : 0;
+
+      svg += '<g class="chart-col" data-tip="' + esc(p.name + ' - ' + p.units + ' units, ' + p.share + '% of the week') + '">';
+      svg += '<rect class="chart-hit" x="0" y="' + y + '" width="' + W + '" height="' + (rowH + gap) + '"></rect>';
+      svg += '<text class="chart-name" x="0" y="' + (y + rowH / 2 + 4) + '">' + esc(p.name) + '</text>';
+
+      if (w > 0) {
+        svg += '<path class="chart-bar" d="' + hBarPath(labelW, by, w, barH, 4) + '" fill="' + color + '"></path>';
+      } else {
+        svg += '<rect x="' + labelW + '" y="' + by + '" width="2" height="' + barH + '" fill="var(--line-strong)"></rect>';
+      }
+
+      svg += '<text class="chart-value" x="' + (labelW + w + 10) + '" y="' + (y + rowH / 2 + 4) + '">' + p.units + '</text>';
+      svg += '</g>';
+    }
+
+    return svg + '</svg>';
+  }
+
+  // Shared hover layer for both charts. One tooltip node, moved around.
+  function attachTips(root) {
+    var tip = null;
+
+    function show(text, x, y) {
+      if (!tip) {
+        tip = document.createElement('div');
+        tip.className = 'chart-tip';
+        document.body.appendChild(tip);
+      }
+      tip.textContent = text;
+      tip.style.left = (x + 14) + 'px';
+      tip.style.top = (y - 10) + 'px';
+      tip.hidden = false;
+    }
+
+    function hide() { if (tip) { tip.hidden = true; } }
+
+    var cols = root.querySelectorAll('[data-tip]');
+    var i;
+    for (i = 0; i < cols.length; i++) {
+      cols[i].addEventListener('mousemove', function (ev) {
+        show(this.getAttribute('data-tip'), ev.clientX, ev.clientY);
+      });
+      cols[i].addEventListener('mouseleave', hide);
+    }
+    root.addEventListener('mouseleave', hide);
+  }
+
   R.report = {
     build: build,
     checkPassword: checkPassword,
     listBrands: listBrands,
     supervisorOf: supervisorOf,
-    paxOf: paxOf
+    paxOf: paxOf,
+    daysChartSvg: daysChartSvg,
+    productsChartSvg: productsChartSvg,
+    attachTips: attachTips
   };
 
 })(window.RoadCrew);
