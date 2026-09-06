@@ -2,14 +2,36 @@ window.RoadCrew = window.RoadCrew || {};
 (function (R) {
   'use strict';
 
-  var DB_KEY = 'roadcrew.db';
+  // Bumped from 'roadcrew.db' when regions became a three-level tree. migrate() only
+  // ever ADDS what is missing, so it cannot repoint outlets.regionId at the new
+  // top-level regions or drop users.regionId in favour of users.subregionId - a stored
+  // database would keep both fields and the stale value would win forever. A new key is
+  // the clean break: the old payload is ignored and removed, and every record is seeded
+  // with the correct shape. Nothing of value is lost - this is a demo whose data is
+  // reseedable from Settings > Demo data.
+  var DB_KEY = 'roadcrew.db.v2';
+  var LEGACY_DB_KEYS = ['roadcrew.db'];
   var SESSION_KEY_HINT = 'roadcrew.session';
 
   var SEED = {
+    // Three levels, on the client's own words: "Add EM means Sabah n sarawak; add
+    // Singapore". The flat Central/Southern/East Coast list the demo started with is
+    // now the MIDDLE level - those are sub-regions of West Malaysia.
     regions: [
-      { id: 'r-central', name: 'Central' },
-      { id: 'r-south', name: 'Southern' },
-      { id: 'r-east', name: 'East Coast' }
+      { id: 'reg-wm', name: 'West Malaysia', code: 'WM' },
+      { id: 'reg-em', name: 'East Malaysia', code: 'EM' },
+      { id: 'reg-sg', name: 'Singapore', code: 'SG' }
+    ],
+    // Singapore carries one same-named sub-region rather than hanging outlets straight
+    // off the region. Uniform depth means no screen has to special-case a childless
+    // region, and the Regions panel can split it later without a migration.
+    subregions: [
+      { id: 'sr-central', regionId: 'reg-wm', name: 'Central' },
+      { id: 'sr-south', regionId: 'reg-wm', name: 'Southern' },
+      { id: 'sr-east', regionId: 'reg-wm', name: 'East Coast' },
+      { id: 'sr-sabah', regionId: 'reg-em', name: 'Sabah' },
+      { id: 'sr-sarawak', regionId: 'reg-em', name: 'Sarawak' },
+      { id: 'sr-sg', regionId: 'reg-sg', name: 'Singapore' }
     ],
     // reportPassword gates the public sales report on the landing page. It is checked in
     // the browser, so it is a presentation gate, not access control - nothing sensitive
@@ -21,32 +43,64 @@ window.RoadCrew = window.RoadCrew || {};
       { id: 'b-kewpie', name: 'Kewpie', color: '#D98F14', reportPassword: 'kewpie2026' }
     ],
     outlets: [
-      { id: 'o-01', name: 'Pasaraya U All Mart', regionId: 'r-east', city: 'Pasir Mas' },
-      { id: 'o-02', name: 'PKT Gua Musang', regionId: 'r-east', city: 'Gua Musang' },
-      { id: 'o-03', name: 'Econjaya Machang', regionId: 'r-east', city: 'Machang' },
-      { id: 'o-04', name: 'Sabasun Kuala Terengganu', regionId: 'r-east', city: 'Kuala Terengganu' },
-      { id: 'o-05', name: 'Sabasun Wakaf Tembesu', regionId: 'r-east', city: 'Kuala Terengganu' },
-      { id: 'o-06', name: 'Arena Teraju Mart', regionId: 'r-east', city: 'Kuantan' },
-      { id: 'o-07', name: 'KY Maju Sg Soi', regionId: 'r-east', city: 'Kuantan' },
-      { id: 'o-08', name: 'St. Rosyam Tampoi (Booth)', regionId: 'r-south', city: 'Johor Bahru' },
-      { id: 'o-09', name: "Lotus's Setia Tropika", regionId: 'r-south', city: 'Johor Bahru' },
-      { id: 'o-10', name: "Lotus's Kepong", regionId: 'r-central', city: 'Kuala Lumpur' },
-      { id: 'o-11', name: "Lotus's Seremban", regionId: 'r-central', city: 'Seremban' },
-      { id: 'o-12', name: 'St. Rosyam Senawang', regionId: 'r-central', city: 'Seremban' },
-      { id: 'o-13', name: 'Hero Subang', regionId: 'r-central', city: 'Subang Jaya' },
-      { id: 'o-14', name: 'Jaya Grocer Sunway Pyramid', regionId: 'r-central', city: 'Petaling Jaya' },
+      { id: 'o-01', name: 'Pasaraya U All Mart', subregionId: 'sr-east', city: 'Pasir Mas' },
+      { id: 'o-02', name: 'PKT Gua Musang', subregionId: 'sr-east', city: 'Gua Musang' },
+      { id: 'o-03', name: 'Econjaya Machang', subregionId: 'sr-east', city: 'Machang' },
+      { id: 'o-04', name: 'Sabasun Kuala Terengganu', subregionId: 'sr-east', city: 'Kuala Terengganu' },
+      { id: 'o-05', name: 'Sabasun Wakaf Tembesu', subregionId: 'sr-east', city: 'Kuala Terengganu' },
+      { id: 'o-06', name: 'Arena Teraju Mart', subregionId: 'sr-east', city: 'Kuantan' },
+      { id: 'o-07', name: 'KY Maju Sg Soi', subregionId: 'sr-east', city: 'Kuantan' },
+      { id: 'o-08', name: 'St. Rosyam Tampoi (Booth)', subregionId: 'sr-south', city: 'Johor Bahru' },
+      { id: 'o-09', name: "Lotus's Setia Tropika", subregionId: 'sr-south', city: 'Johor Bahru' },
+      { id: 'o-10', name: "Lotus's Kepong", subregionId: 'sr-central', city: 'Kuala Lumpur' },
+      { id: 'o-11', name: "Lotus's Seremban", subregionId: 'sr-central', city: 'Seremban' },
+      { id: 'o-12', name: 'St. Rosyam Senawang', subregionId: 'sr-central', city: 'Seremban' },
+      { id: 'o-13', name: 'Hero Subang', subregionId: 'sr-central', city: 'Subang Jaya' },
+      { id: 'o-14', name: 'Jaya Grocer Sunway Pyramid', subregionId: 'sr-central', city: 'Petaling Jaya' },
       // Named in the client's own mockup, on the Pocky Sampling row.
-      { id: 'o-15', name: "Lotus's Setia Alam", regionId: 'r-central', city: 'Shah Alam' }
+      { id: 'o-15', name: "Lotus's Setia Alam", subregionId: 'sr-central', city: 'Shah Alam' },
+      // PLACEHOLDERS. The client asked for East Malaysia and Singapore but has not
+      // sent outlets for either, so these are real chains that actually trade in each
+      // territory - Servay and City Grocer in Sabah, Everrise and Ta Kiong in Sarawak,
+      // FairPrice and Sheng Siong in Singapore - standing in until Five Senses confirms
+      // the real list. Replace before the client sees numbers attached to them.
+      { id: 'o-16', name: 'Servay Hypermarket Penampang', subregionId: 'sr-sabah', city: 'Kota Kinabalu' },
+      { id: 'o-17', name: 'City Grocer Bundusan', subregionId: 'sr-sabah', city: 'Kota Kinabalu' },
+      { id: 'o-18', name: 'Everrise BDC', subregionId: 'sr-sarawak', city: 'Kuching' },
+      { id: 'o-19', name: 'Ta Kiong Stutong', subregionId: 'sr-sarawak', city: 'Kuching' },
+      { id: 'o-20', name: 'FairPrice Xtra Jurong Point', subregionId: 'sr-sg', city: 'Jurong East' },
+      { id: 'o-21', name: 'Sheng Siong Bedok', subregionId: 'sr-sg', city: 'Bedok' }
     ],
+    // Three roles. brandId is set on client rows only - it is what scopes the client
+    // portal, so an admin or a promoter must carry null rather than a brand they would
+    // then appear to own. subregionId is where a person works; the admin covers all.
+    //
+    // Eleven client-service accounts, because the client said "I have 11 client service
+    // team who will do the schedule update". The first four are on @gmail.com and are
+    // the ones listed in the landing page demo box, one per brand, so the account grid
+    // stays short while the seed stays honest about the headcount.
     users: [
-      { id: 'u-admin', name: 'Coordinator', email: 'admin@gmail.com', password: 'admin123', role: 'admin', regionId: null, phone: '012-000 0000', status: 'active', avatar: 'img/avatar-01.svg' },
-      { id: 'u-01', name: 'Airene', email: 'staff1@gmail.com', password: 'admin123', role: 'staff', regionId: 'r-east', phone: '013-101 1001', status: 'active', avatar: 'img/avatar-02.svg' },
-      { id: 'u-02', name: 'Chrisnie', email: 'chrisnie@roadcrew.demo', password: 'admin123', role: 'staff', regionId: 'r-south', phone: '013-102 1002', status: 'active', avatar: 'img/avatar-03.svg' },
-      { id: 'u-03', name: 'Elizabeth', email: 'elizabeth@roadcrew.demo', password: 'admin123', role: 'staff', regionId: 'r-central', phone: '013-103 1003', status: 'active', avatar: 'img/avatar-04.svg' },
-      { id: 'u-04', name: 'Johnny', email: 'staff2@gmail.com', password: 'admin123', role: 'staff', regionId: 'r-central', phone: '013-104 1004', status: 'active', avatar: 'img/avatar-05.svg' },
-      { id: 'u-05', name: 'Rou Qian', email: 'rouqian@roadcrew.demo', password: 'admin123', role: 'staff', regionId: 'r-east', phone: '013-105 1005', status: 'active', avatar: 'img/avatar-06.svg' },
-      { id: 'u-06', name: 'Ying Zhi', email: 'yingzhi@roadcrew.demo', password: 'admin123', role: 'staff', regionId: 'r-east', phone: '013-106 1006', status: 'active', avatar: 'img/avatar-07.svg' },
-      { id: 'u-07', name: 'Yong Lok', email: 'yonglok@roadcrew.demo', password: 'admin123', role: 'staff', regionId: 'r-central', phone: '013-107 1007', status: 'inactive', avatar: 'img/avatar-08.svg' }
+      { id: 'u-admin', name: 'Coordinator', email: 'admin@gmail.com', password: 'admin123', role: 'admin', subregionId: null, brandId: null, phone: '012-000 0000', status: 'active', avatar: 'img/avatar-01.svg' },
+
+      { id: 'u-c01', name: 'Adeline Tan', email: 'client1@gmail.com', password: 'admin123', role: 'client', subregionId: null, brandId: 'b-kapalapi', phone: '012-201 2001', status: 'active', avatar: 'img/avatar-02.svg' },
+      { id: 'u-c02', name: 'Farah Idris', email: 'client2@gmail.com', password: 'admin123', role: 'client', subregionId: null, brandId: 'b-jasmine', phone: '012-202 2002', status: 'active', avatar: 'img/avatar-03.svg' },
+      { id: 'u-c03', name: 'Marcus Lim', email: 'client3@gmail.com', password: 'admin123', role: 'client', subregionId: null, brandId: 'b-pocky', phone: '012-203 2003', status: 'active', avatar: 'img/avatar-04.svg' },
+      { id: 'u-c04', name: 'Nurul Hakim', email: 'client4@gmail.com', password: 'admin123', role: 'client', subregionId: null, brandId: 'b-kewpie', phone: '012-204 2004', status: 'active', avatar: 'img/avatar-05.svg' },
+      { id: 'u-c05', name: 'Priya Ramesh', email: 'priya@roadcrew.demo', password: 'admin123', role: 'client', subregionId: null, brandId: 'b-kapalapi', phone: '012-205 2005', status: 'active', avatar: 'img/avatar-06.svg' },
+      { id: 'u-c06', name: 'Sook Yee', email: 'sookyee@roadcrew.demo', password: 'admin123', role: 'client', subregionId: null, brandId: 'b-kapalapi', phone: '012-206 2006', status: 'active', avatar: 'img/avatar-07.svg' },
+      { id: 'u-c07', name: 'Daniel Wong', email: 'daniel@roadcrew.demo', password: 'admin123', role: 'client', subregionId: null, brandId: 'b-jasmine', phone: '012-207 2007', status: 'active', avatar: 'img/avatar-08.svg' },
+      { id: 'u-c08', name: 'Aina Zulkifli', email: 'aina@roadcrew.demo', password: 'admin123', role: 'client', subregionId: null, brandId: 'b-jasmine', phone: '012-208 2008', status: 'active', avatar: 'img/avatar-02.svg' },
+      { id: 'u-c09', name: 'Kelvin Chew', email: 'kelvin@roadcrew.demo', password: 'admin123', role: 'client', subregionId: null, brandId: 'b-pocky', phone: '012-209 2009', status: 'active', avatar: 'img/avatar-03.svg' },
+      { id: 'u-c10', name: 'Michelle Foo', email: 'michelle@roadcrew.demo', password: 'admin123', role: 'client', subregionId: null, brandId: 'b-pocky', phone: '012-210 2010', status: 'active', avatar: 'img/avatar-04.svg' },
+      { id: 'u-c11', name: 'Hafiz Rahman', email: 'hafiz@roadcrew.demo', password: 'admin123', role: 'client', subregionId: null, brandId: 'b-kewpie', phone: '012-211 2011', status: 'active', avatar: 'img/avatar-05.svg' },
+
+      { id: 'u-01', name: 'Airene', email: 'staff1@gmail.com', password: 'admin123', role: 'staff', subregionId: 'sr-east', brandId: null, phone: '013-101 1001', status: 'active', avatar: 'img/avatar-02.svg' },
+      { id: 'u-02', name: 'Chrisnie', email: 'chrisnie@roadcrew.demo', password: 'admin123', role: 'staff', subregionId: 'sr-south', brandId: null, phone: '013-102 1002', status: 'active', avatar: 'img/avatar-03.svg' },
+      { id: 'u-03', name: 'Elizabeth', email: 'elizabeth@roadcrew.demo', password: 'admin123', role: 'staff', subregionId: 'sr-central', brandId: null, phone: '013-103 1003', status: 'active', avatar: 'img/avatar-04.svg' },
+      { id: 'u-04', name: 'Johnny', email: 'staff2@gmail.com', password: 'admin123', role: 'staff', subregionId: 'sr-central', brandId: null, phone: '013-104 1004', status: 'active', avatar: 'img/avatar-05.svg' },
+      { id: 'u-05', name: 'Rou Qian', email: 'rouqian@roadcrew.demo', password: 'admin123', role: 'staff', subregionId: 'sr-east', brandId: null, phone: '013-105 1005', status: 'active', avatar: 'img/avatar-06.svg' },
+      { id: 'u-06', name: 'Ying Zhi', email: 'yingzhi@roadcrew.demo', password: 'admin123', role: 'staff', subregionId: 'sr-east', brandId: null, phone: '013-106 1006', status: 'active', avatar: 'img/avatar-07.svg' },
+      { id: 'u-07', name: 'Yong Lok', email: 'yonglok@roadcrew.demo', password: 'admin123', role: 'staff', subregionId: 'sr-central', brandId: null, phone: '013-107 1007', status: 'inactive', avatar: 'img/avatar-08.svg' }
     ],
     schedules: [
       { id: 's-01', brandId: 'b-kapalapi', outletId: 'o-10', spIds: ['u-03'], startDate: '2026-07-05', endDate: '2026-07-06', shift: '10:00 – 18:00', status: 'planned', notes: '' },
@@ -239,6 +293,7 @@ window.RoadCrew = window.RoadCrew || {};
     return !!state &&
       typeof state === 'object' &&
       Object.prototype.toString.call(state.regions) === '[object Array]' &&
+      Object.prototype.toString.call(state.subregions) === '[object Array]' &&
       Object.prototype.toString.call(state.brands) === '[object Array]' &&
       Object.prototype.toString.call(state.outlets) === '[object Array]' &&
       Object.prototype.toString.call(state.users) === '[object Array]' &&
@@ -318,7 +373,21 @@ window.RoadCrew = window.RoadCrew || {};
     return changed;
   }
 
+  // The v1 payload under the old key can never be read again, so it is only holding
+  // quota. Cleared once per page, the first time the database is touched.
+  var legacyPurged = false;
+
+  function purgeLegacy() {
+    if (legacyPurged) { return; }
+    legacyPurged = true;
+    var i;
+    for (i = 0; i < LEGACY_DB_KEYS.length; i += 1) {
+      removeRaw(LEGACY_DB_KEYS[i]);
+    }
+  }
+
   function load() {
+    purgeLegacy();
     var raw = readRaw();
     if (raw) {
       try {
@@ -422,6 +491,7 @@ window.RoadCrew = window.RoadCrew || {};
     save: save,
     reset: reset,
     regions: function () { return collection('regions'); },
+    subregions: function () { return collection('subregions'); },
     brands: function () { return collection('brands'); },
     outlets: function () { return collection('outlets'); },
     users: function () { return collection('users'); },
