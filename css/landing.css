@@ -226,11 +226,12 @@ html { scroll-behavior: smooth; }
 
 /* -------------------------------------------------------- report cards -- */
 
+/* One row, four across. The previous auto-fit grid was capped by a 900px
+   max-width, which is what forced the fourth brand onto a second row. */
 .report-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
-  max-width: 900px;
 }
 .report-card {
   background: var(--surface);
@@ -578,6 +579,7 @@ html { scroll-behavior: smooth; }
   .section-title { font-size: 24px; }
   .features { grid-template-columns: 1fr; gap: 16px; }
   .gallery { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .report-cards { grid-template-columns: repeat(2, 1fr); gap: 16px; }
 
   .footer-grid {
     grid-template-columns: 1fr 1fr;
@@ -598,6 +600,7 @@ html { scroll-behavior: smooth; }
   .hero { padding: 40px 20px 48px; }
   .hero-title { font-size: 27px; }
   .gallery { grid-template-columns: 1fr; }
+  .report-cards { grid-template-columns: 1fr; }
   .section { padding: 40px 20px; }
   .demo-grid { grid-template-columns: 48px 1fr; }
   .demo-grid .demo-pass { grid-column: 2; color: var(--ink-muted); }
