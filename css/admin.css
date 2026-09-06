@@ -451,6 +451,10 @@
 }
 .sched-act { background: none; border: 0; padding: 0; color: inherit; font-size: 13px; }
 .sched-act:hover { color: var(--brand); }
+/* A blocked action must read as blocked - the signed-in admin cannot deactivate
+   themselves, and the row should show that rather than only refusing on click. */
+.sched-act:disabled { opacity: .3; cursor: not-allowed; }
+.sched-act:disabled:hover { color: inherit; }
 
 .sched-foot {
   font-size: 12px;

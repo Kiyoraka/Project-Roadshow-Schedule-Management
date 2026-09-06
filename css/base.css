@@ -101,6 +101,11 @@ body {
 img, svg { max-width: 100%; }
 img { display: block; border: 0; }
 
+/* Any author `display` rule outranks the browser's own [hidden] rule, so an
+   element given a display value here would stay visible while carrying the
+   hidden attribute. Restore the attribute's meaning globally. */
+[hidden] { display: none !important; }
+
 a {
   color: var(--brand);
   text-decoration: none;

@@ -404,8 +404,13 @@ window.RoadCrew = window.RoadCrew || {};
     for (i = 0; i < draft.spIds.length; i++) {
       var clash = clashesFor(draft.spIds[i]);
       for (j = 0; j < clash.length; j++) {
+        // Artboard 04 names the days that actually collide, not the whole span of
+        // the other booking - the promoter row above already carries that.
+        var from = clash[j].startDate > draft.startDate ? clash[j].startDate : draft.startDate;
+        var to = clash[j].endDate < draft.endDate ? clash[j].endDate : draft.endDate;
         messages.push(nameOf('users', draft.spIds[i]) + ' is already booked at ' +
-                      nameOf('outlets', clash[j].outletId) + ' on ' + shortRange(clash[j]) + '.');
+                      nameOf('outlets', clash[j].outletId) + ' on ' +
+                      U.fmtRange(from, to).replace(/ \d{4}$/, '') + '.');
       }
     }
 
