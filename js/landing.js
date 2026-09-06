@@ -60,27 +60,19 @@ window.RoadCrew = window.RoadCrew || {};
 
   /* ------------------------------------------------------------ nav ----- */
 
+  // Toggle the flag without rebuilding the class string, so a tab keeps
+  // whichever base class it was authored with.
+  function setActive(el, on) {
+    var base = el.className.replace(/\s*is-active/g, '');
+    el.className = on ? base + ' is-active' : base;
+  }
+
   function wireNav() {
-    var burger = byId('nav-burger');
-    var links = byId('nav-links');
-
-    if (burger && links) {
-      burger.addEventListener('click', function () {
-        var openNow = links.className.indexOf('is-open') === -1;
-        links.className = openNow ? 'nav-links is-open' : 'nav-links';
-        burger.setAttribute('aria-expanded', openNow ? 'true' : 'false');
-      });
-    }
-
-    var items = document.querySelectorAll('.nav-link');
+    // The desktop links and the phone tab bar are one navigation: same targets,
+    // same scroll behaviour, highlighted together by the one spy below.
+    var items = document.querySelectorAll('.nav-link, .botnav-item[href]');
     var i;
-    for (i = 0; i < items.length; i++) {
-      wireAnchor(items[i]);
-      items[i].addEventListener('click', function () {
-        if (links) { links.className = 'nav-links'; }
-        if (burger) { burger.setAttribute('aria-expanded', 'false'); }
-      });
-    }
+    for (i = 0; i < items.length; i++) { wireAnchor(items[i]); }
 
     // Any other in-page anchor - hero "See a report", footer links.
     var extra = document.querySelectorAll('[data-scroll], .footer-link[href^="#"]');
@@ -96,8 +88,7 @@ window.RoadCrew = window.RoadCrew || {};
         if (el && el.getBoundingClientRect().top <= 120) { best = ids[j]; }
       }
       for (j = 0; j < items.length; j++) {
-        var on = items[j].getAttribute('href') === '#' + best;
-        items[j].className = on ? 'nav-link is-active' : 'nav-link';
+        setActive(items[j], items[j].getAttribute('href') === '#' + best);
       }
     }
     window.addEventListener('scroll', spy);

@@ -61,7 +61,7 @@ Passwords are editable per brand in **Settings → Brands**.
 
 ## What is in it
 
-**Public site** — `index.html`, one page with a sticky nav.
+**Public site** — `index.html`, one page with a sticky nav. Below 900px the sections move out of the top bar and into a fixed bottom tab bar, the same shape the promoter app uses, so a phone never has to open a menu to get around.
 
 - **Home** — photo-led hero with a live stat card (units sampled, schedules, outlets) and the client list, all read from the store.
 - **About** — a live numbers strip (brands, outlets, regions, promoters), then three photo-and-text rows: Schedule, Team, Proof.
