@@ -13,20 +13,110 @@
 </head>
 <body class="landing">
 
-  <!-- ============ HERO + LOGIN ============ -->
-  <section class="hero">
+  <!-- ============ NAVBAR ============ -->
+  <header class="nav">
+    <a class="nav-brand" href="#home">
+      <span class="nav-mark">R</span>
+      <span class="nav-word">RoadCrew</span>
+    </a>
+    <nav class="nav-links" id="nav-links">
+      <a class="nav-link" href="#home">Home</a>
+      <a class="nav-link" href="#about">About</a>
+      <a class="nav-link" href="#gallery">Gallery</a>
+      <a class="nav-link" href="#info">Info</a>
+    </nav>
+    <button class="nav-cta" type="button" data-open-login>Log in</button>
+    <button class="nav-burger" type="button" id="nav-burger" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <!-- ============ HOME / HERO ============ -->
+  <section class="hero" id="home">
     <div class="hero-copy">
-      <div class="hero-brand">
-        <div class="hero-mark">R</div>
-        <div class="hero-word">RoadCrew</div>
-      </div>
       <h1 class="hero-title">Every promoter, every outlet, every day, on one calendar.</h1>
       <p class="hero-sub">Plan roadshows, assign your promoters, and get photo proof from the booth.</p>
-      <a class="hero-cta" href="#login">Log in</a>
+      <button class="hero-cta" type="button" data-open-login>Log in</button>
     </div>
+  </section>
 
-    <div class="login-card" id="login">
-      <div class="login-title">Welcome back</div>
+  <!-- ============ ABOUT ============ -->
+  <section class="section" id="about">
+    <div class="section-head">
+      <div class="section-eyebrow">About</div>
+      <h2 class="section-title">Sampling roadshows, run from one place</h2>
+      <p class="section-lead">
+        We put sales promoters into supermarkets and grocers to run brand activations.
+        RoadCrew replaces the spreadsheet that used to hold it all &mdash; who is working,
+        which outlet, which days &mdash; and gives every promoter their own schedule on their phone.
+      </p>
+    </div>
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon"><div class="feature-glyph feature-glyph-square"></div></div>
+        <div class="feature-title">Schedule</div>
+        <div class="feature-text">Month and list views, brand-coloured, conflict warnings.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon"><div class="feature-glyph feature-glyph-circle"></div></div>
+        <div class="feature-title">Team</div>
+        <div class="feature-text">Promoters by region, active or inactive, one tap to assign.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon"><div class="feature-glyph feature-glyph-card"></div></div>
+        <div class="feature-title">Proof</div>
+        <div class="feature-text">Promoters check in with a photo from the outlet, coordinators see it live.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GALLERY ============ -->
+  <section class="section section-alt" id="gallery">
+    <div class="section-head">
+      <div class="section-eyebrow">Gallery</div>
+      <h2 class="section-title">From the floor</h2>
+      <p class="section-lead">Booths, aisles and activations from recent campaigns.</p>
+    </div>
+    <div class="gallery">
+      <figure class="shot-tile"><img src="img/gallery-01.svg" alt="Sampling booth with backdrop banner"></figure>
+      <figure class="shot-tile"><img src="img/gallery-02.svg" alt="Supermarket aisle with product shelving"></figure>
+      <figure class="shot-tile"><img src="img/gallery-03.svg" alt="Promoter stand with a queue of shoppers"></figure>
+      <figure class="shot-tile"><img src="img/gallery-04.svg" alt="Product display pyramid on a table"></figure>
+      <figure class="shot-tile"><img src="img/gallery-05.svg" alt="Storefront entrance with signage"></figure>
+      <figure class="shot-tile"><img src="img/gallery-06.svg" alt="Wide view of an event floor"></figure>
+    </div>
+  </section>
+
+  <!-- ============ INFO / BRAND REPORTS ============ -->
+  <section class="section" id="info">
+    <div class="section-head">
+      <div class="section-eyebrow">Info</div>
+      <h2 class="section-title">Campaign reports</h2>
+      <p class="section-lead">
+        Weekly sampling results per brand. Each report is opened with the password
+        issued to that brand&rsquo;s team.
+      </p>
+    </div>
+    <div class="report-cards" id="report-cards"></div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="trust">
+    <div class="trust-left">
+      <span class="trust-label">Trusted for sampling roadshows</span>
+      <span class="trust-chip">Kapal Api</span>
+      <span class="trust-chip">Jasmine</span>
+    </div>
+    <div class="trust-meta">RoadCrew Activations &middot; Demo build</div>
+  </footer>
+
+  <!-- ============ LOGIN MODAL ============ -->
+  <div class="modal" id="login-modal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div class="modal-title">Welcome back</div>
+        <button class="modal-close" type="button" data-close-login>&#10005;</button>
+      </div>
       <div class="login-sub">Sign in to your RoadCrew account</div>
 
       <form id="login-form" novalidate>
@@ -52,40 +142,45 @@
         </div>
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- ============ FEATURE TILES ============ -->
-  <section class="features">
-    <div class="feature">
-      <div class="feature-icon"><div class="feature-glyph feature-glyph-square"></div></div>
-      <div class="feature-title">Schedule</div>
-      <div class="feature-text">Month and list views, brand-coloured, conflict warnings.</div>
-    </div>
-    <div class="feature">
-      <div class="feature-icon"><div class="feature-glyph feature-glyph-circle"></div></div>
-      <div class="feature-title">Team</div>
-      <div class="feature-text">Promoters by region, active or inactive, one tap to assign.</div>
-    </div>
-    <div class="feature">
-      <div class="feature-icon"><div class="feature-glyph feature-glyph-card"></div></div>
-      <div class="feature-title">Proof</div>
-      <div class="feature-text">Promoters check in with a photo from the outlet, coordinators see it live.</div>
-    </div>
-  </section>
+  <!-- ============ REPORT PASSWORD GATE ============ -->
+  <div class="modal" id="gate-modal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div class="modal-title" id="gate-title">Campaign report</div>
+        <button class="modal-close" type="button" data-close-gate>&#10005;</button>
+      </div>
+      <div class="modal-text" id="gate-sub">Enter the password issued to this brand&rsquo;s team.</div>
 
-  <!-- ============ TRUST STRIP ============ -->
-  <section class="trust">
-    <div class="trust-left">
-      <span class="trust-label">Trusted for sampling roadshows</span>
-      <span class="trust-chip">Kapal Api</span>
-      <span class="trust-chip">Jasmine</span>
+      <form id="gate-form" novalidate>
+        <label class="login-label" for="gate-password">Report password</label>
+        <input class="login-input" id="gate-password" type="password" autocomplete="off"
+               placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;">
+        <div class="login-error" id="gate-error" role="alert"></div>
+        <div class="modal-foot">
+          <button class="btn" type="button" data-close-gate>Cancel</button>
+          <button class="btn btn-primary" type="submit">Unlock</button>
+        </div>
+      </form>
     </div>
-    <div class="trust-meta">RoadCrew Activations &middot; Demo build</div>
-  </section>
+  </div>
+
+  <!-- ============ REPORT ============ -->
+  <div class="modal" id="report-modal">
+    <div class="modal-box modal-box-lg">
+      <div class="modal-head">
+        <div class="modal-title" id="report-title">Campaign report</div>
+        <button class="modal-close" type="button" data-close-report>&#10005;</button>
+      </div>
+      <div class="report-body" id="report-body"></div>
+    </div>
+  </div>
 
 <script src="js/data.js"></script>
 <script src="js/util.js"></script>
 <script src="js/auth.js"></script>
+<script src="js/report.js"></script>
 <script src="js/landing.js"></script>
 </body>
 </html>
