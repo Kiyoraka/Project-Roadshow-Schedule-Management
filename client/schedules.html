@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schedules - RoadCrew</title>
+<link rel="icon" href="../img/logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+<div class="admin">
+
+  <!-- ============ SIDEBAR (desktop) ============ -->
+  <aside class="side">
+    <div class="side-brand">
+      <div class="side-mark">R</div>
+      <div class="side-word">RoadCrew</div>
+    </div>
+    <!-- One item. Scheduling is the whole job of a client-service desk, and a nav
+         rail offering pages this role cannot open would be a list of dead ends. -->
+    <nav class="side-nav">
+      <a class="side-item is-active" href="schedules.html"><span class="side-item-initial">S</span><span class="side-item-label">Schedules</span></a>
+    </nav>
+    <div class="side-spacer"></div>
+    <div class="side-foot">
+      <div class="side-avatar" id="side-initial">C</div>
+      <div class="side-who">
+        <div class="side-name" id="side-name">Client service</div>
+        <div class="side-brand-name" id="side-brand">&nbsp;</div>
+        <button class="side-logout" type="button" data-logout>Log out</button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+
+    <!-- ============ APP BAR (mobile, artboard 09) ============ -->
+    <header class="appbar">
+      <div class="appbar-mark">R</div>
+      <div class="appbar-title">Schedules</div>
+      <div class="appbar-avatar" id="appbar-initial">C</div>
+    </header>
+
+    <!-- ============ TOP BAR (desktop) ============ -->
+    <header class="topbar">
+      <div class="topbar-title">Schedules</div>
+      <div class="topbar-right">
+        <div class="date-pill" id="topbar-date">&nbsp;</div>
+        <div class="topbar-avatar" id="topbar-initial">C</div>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="viewseg">
+          <button class="viewseg-btn is-active" type="button" data-view="list">List</button>
+          <button class="viewseg-btn" type="button" data-view="month">Month</button>
+        </div>
+        <div class="toolbar-filters">
+          <select class="filter" id="f-region"></select>
+          <select class="filter" id="f-subregion"></select>
+          <select class="filter" id="f-promoter"></select>
+          <select class="filter" id="f-status"></select>
+        </div>
+        <div class="toolbar-spacer"></div>
+        <button class="btn-new" type="button" id="btn-new">+ New schedule</button>
+      </div>
+
+      <!-- List view -->
+      <div id="view-list">
+        <div class="sched-table">
+          <div class="sched-cols sched-head">
+            <div>Dates</div><div>Brand</div><div>Outlet</div><div>Region</div>
+            <div>Promoters</div><div>Shift</div><div>Status</div><div></div>
+          </div>
+          <div id="sched-rows"></div>
+        </div>
+        <div class="sched-cards" id="sched-cards"></div>
+        <!-- Count on the left, page buttons on the right. Both are drawn by
+             R.util.pagerHtml, so this stays empty in the markup. -->
+        <div class="pager" id="sched-foot"></div>
+      </div>
+
+      <!-- Month view -->
+      <div id="view-month" hidden>
+        <div class="month-wrap">
+          <div class="month-bar">
+            <div class="month-label" id="month-label"></div>
+            <div class="month-nav">
+              <button class="btn btn-sm" type="button" id="month-prev">&lsaquo;</button>
+              <button class="btn btn-sm" type="button" id="month-next">&rsaquo;</button>
+            </div>
+          </div>
+          <div id="month-grid"></div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ============ BOTTOM NAV (mobile) ============ -->
+    <nav class="botnav">
+      <a class="botnav-item is-active" href="schedules.html"><div class="botnav-glyph"></div><div class="botnav-label">Schedules</div></a>
+    </nav>
+
+  </div>
+</div>
+
+<!-- ============ DRAWER (artboard 04) ============ -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-head">
+    <div class="drawer-title" id="drawer-title">New schedule</div>
+    <button class="drawer-close" type="button" id="drawer-close">&#10005;</button>
+  </div>
+
+  <div class="drawer-body">
+    <div class="field">
+      <label class="field-label" for="d-brand">Brand <span class="req">*</span></label>
+      <select class="select" id="d-brand"></select>
+    </div>
+
+    <!-- Region narrows the sub-region, which narrows the outlet. Three rungs,
+         each rebuilt by the one above it. -->
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label" for="d-region">Region <span class="req">*</span></label>
+        <select class="select" id="d-region"></select>
+      </div>
+      <div class="field">
+        <label class="field-label" for="d-subregion">Sub-region <span class="req">*</span></label>
+        <select class="select" id="d-subregion"></select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="d-outlet">Outlet <span class="req">*</span></label>
+      <select class="select" id="d-outlet"></select>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label" for="d-start">Start date <span class="req">*</span></label>
+        <input class="input" id="d-start" type="date">
+      </div>
+      <div class="field">
+        <label class="field-label" for="d-end">End date <span class="req">*</span></label>
+        <input class="input" id="d-end" type="date">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="d-shift">Shift</label>
+      <input class="input" id="d-shift" type="text" placeholder="10:00 &ndash; 18:00">
+    </div>
+
+    <div class="field">
+      <label class="field-label">Promoters</label>
+      <div class="pro-list" id="d-promoters"></div>
+    </div>
+
+    <div class="alert alert-warn" id="d-conflict" hidden>
+      <div>
+        <div class="alert-title">Scheduling conflict</div>
+        <div id="d-conflict-text"></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="d-notes">Notes</label>
+      <textarea class="textarea" id="d-notes" placeholder="Optional notes&hellip;"></textarea>
+    </div>
+  </div>
+
+  <div class="drawer-foot">
+    <button class="btn" type="button" id="d-cancel">Cancel</button>
+    <button class="btn btn-primary" type="button" id="d-save">Save</button>
+  </div>
+</aside>
+
+<!-- ============ CONFIRM MODAL ============ -->
+<div class="modal" id="confirm">
+  <div class="modal-box">
+    <div class="modal-title" id="confirm-title">Cancel this schedule?</div>
+    <div class="modal-text" id="confirm-text"></div>
+    <div class="modal-foot">
+      <button class="btn" type="button" id="confirm-no">Keep it</button>
+      <button class="btn btn-danger" type="button" id="confirm-yes">Cancel schedule</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/util.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/calendar.js"></script>
+<script src="../js/client/schedules.js"></script>
+</body>
+</html>
