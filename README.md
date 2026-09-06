@@ -40,10 +40,10 @@ Both work. Every page carries its own navigation markup and uses relative paths,
 | Role | Email | Password | Lands on |
 |---|---|---|---|
 | Admin | `admin@gmail.com` | `admin123` | Admin dashboard, read-only schedules |
-| Client service · Kapal Api | `client1@gmail.com` | `admin123` | Kapal Api's schedules |
-| Client service · Jasmine | `client2@gmail.com` | `admin123` | Jasmine's schedules |
-| Client service · Pocky | `client3@gmail.com` | `admin123` | Pocky's schedules |
-| Client service · Kewpie | `client4@gmail.com` | `admin123` | Kewpie's schedules |
+| Client service · Kapal Api | `client1@gmail.com` | `admin123` | Kapal Api's Main |
+| Client service · Jasmine | `client2@gmail.com` | `admin123` | Jasmine's Main |
+| Client service · Pocky | `client3@gmail.com` | `admin123` | Pocky's Main |
+| Client service · Kewpie | `client4@gmail.com` | `admin123` | Kewpie's Main |
 | Promoter | `staff1@gmail.com` | `admin123` | Airene's calendar |
 | Promoter | `staff2@gmail.com` | `admin123` | Johnny's calendar |
 
@@ -95,7 +95,11 @@ A report password and a client-service login are **not** two keys to the same lo
 - **Settings** — five tabs: company profile, brands, regions, check-in rules, and a reset that restores the seed. The open tab is written to the URL, so saving a brand keeps you on Brands and `settings.html#checkin` opens straight onto the check-in rules. On a phone the tab strip scrolls sideways rather than squeezing five labels into the width.
 - **Settings → Regions** — three tables drilling down: regions, the sub-regions of the picked region, the outlets of the picked sub-region. Anything that still holds something refuses to be deleted and says how many — a region blocked by its sub-regions, a sub-region by its outlets *and* by the people assigned to it, an outlet by its schedules.
 
-**Client service** — `client/schedules.html`, one page, because scheduling is the whole job. The same list, month view and drawer the admin reads, with the write put back and everything scoped to the account's own brand: no brand filter, since the list is one brand already, and a brand select in the drawer that is fixed rather than chosen. Conflict detection is the one thing that looks across every brand — a promoter booked by the Jasmine desk is just as unavailable to Kapal Api, and the warning says so without naming the other brand's row.
+**Client service** — three pages, the same shell as the admin, everything scoped to the account's own brand.
+
+- **Main** — the admin dashboard with one line changed. Events this week, promoters on duty, check-ins against duty days, unassigned slots, the week strip, today's feed and sub-region coverage — all of it this brand's work only. Note the consequence: *promoters on duty today* counts only promoters on this brand, which is right for a dashboard and is deliberately the opposite of the conflict warning below.
+- **Schedules** — the list, month view and drawer the admin reads, with the write put back. No brand filter, since the list is one brand already, and a brand select in the drawer that is fixed rather than chosen. Conflict detection is the one thing that looks across every brand — a promoter booked by the Jasmine desk is just as unavailable to Kapal Api, and the warning says so without naming the other brand's row.
+- **Settings** — two tabs, and deliberately only two. **My profile** is name, phone and password; email is read-only because it is the login, and a blank password field means keep the current one. **My brand** shows the name and colour read-only — those belong to the coordinator — and lets the desk change the one thing that is theirs to hand out: the report password its brand's marketing people use. Everything else in Settings stays with the admin.
 
 **Promoter** — a phone-first shell.
 
@@ -111,7 +115,7 @@ A report password and a client-service login are **not** two keys to the same lo
 index.html          public site: home, about, gallery, info + three modals
 404.html
 admin/              dashboard, schedules (read-only), users, settings
-client/             schedules — the client-service desk, one brand per account
+client/             dashboard, schedules, settings — the client-service desk, one brand per account
 staff/              calendar, event, uploads
 css/                base (tokens and components), landing, admin, staff
 js/                 data, util, auth, calendar, report + one script per page
