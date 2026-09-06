@@ -62,6 +62,7 @@
       <div class="viewseg viewseg-tabs" id="set-tabs">
         <button class="viewseg-btn is-active" type="button" data-tab="company">Company</button>
         <button class="viewseg-btn" type="button" data-tab="brands">Brands</button>
+        <button class="viewseg-btn" type="button" data-tab="regions">Regions</button>
         <button class="viewseg-btn" type="button" data-tab="checkin">Check-in</button>
         <button class="viewseg-btn" type="button" data-tab="demo">Demo data</button>
       </div>
@@ -133,7 +134,111 @@
         </div>
       </section>
 
-      <!-- ============ 3. CHECK-IN RULES ============ -->
+      <!-- ============ 3. REGIONS ============
+           Three tables, drilling down. Picking a region fills the sub-region table
+           below it; picking a sub-region fills the outlet table below that. Each
+           level carries the same inline add/edit form the Brands panel uses. -->
+      <section class="panel set-panel" id="tab-regions" hidden>
+        <div class="panel-title">Regions</div>
+        <p class="muted">Three levels &ndash; region, sub-region, outlet. Pick a row to open
+        the level beneath it. A row that still holds anything cannot be deleted.</p>
+
+        <!-- Level 1 -->
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Region</th>
+                <th>Code</th>
+                <th>Sub-regions</th>
+                <th>Outlets</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="region-rows"></tbody>
+          </table>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label" for="rg-name">Region name <span class="req">*</span></label>
+            <input class="input" id="rg-name" type="text" placeholder="e.g. East Malaysia">
+          </div>
+          <div class="field">
+            <label class="field-label" for="rg-code">Short code</label>
+            <input class="input" id="rg-code" type="text" placeholder="e.g. EM" maxlength="6">
+          </div>
+        </div>
+
+        <div class="row row-gap">
+          <button class="btn btn-primary" type="button" id="rg-add">Add region</button>
+          <button class="btn" type="button" id="rg-cancel" hidden>Cancel</button>
+        </div>
+
+        <hr class="hr">
+
+        <!-- Level 2 -->
+        <div class="panel-title" id="subregion-title">Sub-regions</div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Sub-region</th>
+                <th>Outlets</th>
+                <th>People</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="subregion-rows"></tbody>
+          </table>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="sr-name">Sub-region name <span class="req">*</span></label>
+          <input class="input" id="sr-name" type="text" placeholder="e.g. Sabah">
+        </div>
+
+        <div class="row row-gap">
+          <button class="btn btn-primary" type="button" id="sr-add">Add sub-region</button>
+          <button class="btn" type="button" id="sr-cancel" hidden>Cancel</button>
+        </div>
+
+        <hr class="hr">
+
+        <!-- Level 3 -->
+        <div class="panel-title" id="outlet-title">Outlets</div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Outlet</th>
+                <th>City</th>
+                <th>Schedules</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="outlet-rows"></tbody>
+          </table>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label" for="ol-name">Outlet name <span class="req">*</span></label>
+            <input class="input" id="ol-name" type="text" placeholder="e.g. Servay Hypermarket Penampang">
+          </div>
+          <div class="field">
+            <label class="field-label" for="ol-city">City</label>
+            <input class="input" id="ol-city" type="text" placeholder="e.g. Kota Kinabalu">
+          </div>
+        </div>
+
+        <div class="row row-gap">
+          <button class="btn btn-primary" type="button" id="ol-add">Add outlet</button>
+          <button class="btn" type="button" id="ol-cancel" hidden>Cancel</button>
+        </div>
+      </section>
+
+      <!-- ============ 4. CHECK-IN RULES ============ -->
       <section class="panel set-panel" id="tab-checkin" hidden>
         <div class="panel-title">Check-in rules</div>
 
@@ -164,7 +269,7 @@
         <button class="btn btn-primary" type="button" id="c-save">Save check-in rules</button>
       </section>
 
-      <!-- ============ 4. DEMO DATA ============ -->
+      <!-- ============ 5. DEMO DATA ============ -->
       <section class="panel set-panel" id="tab-demo" hidden>
         <div class="panel-title">Demo data</div>
         <p class="muted">This demo keeps every brand, schedule, user and check-in photo in

@@ -240,6 +240,14 @@
 .set-panel > .muted,
 .set-panel > .hr { max-width: 820px; }
 
+/* Regions panel. Two of its three tables are pickers - the picked row is what
+   fills the table beneath it - so that row is tinted rather than outlined. Tint
+   reads as "open"; an outline would read as an error, which it is not. */
+.table tbody tr.is-picked { background: var(--brand-050); }
+.table tbody tr.is-picked:hover { background: var(--brand-050-alt); }
+.table tbody tr[data-region-pick],
+.table tbody tr[data-subregion-pick] { cursor: pointer; }
+
 /* --------------------------------------------------------- week strip --- */
 
 .week-head {
@@ -721,10 +729,22 @@
   }
   .pager-btns { justify-content: center; flex-wrap: wrap; }
 
-  /* Four tabs do not fit a phone at the desktop size, and shrinking the text
-     any further would hurt more than the tighter padding does. */
-  .viewseg-tabs { align-self: stretch; }
-  .viewseg-tabs .viewseg-btn { flex: 1; padding: 10px 6px; font-size: 12.5px; }
+  /* Four tabs squeezed onto a phone. Five will not, at any size still worth
+     reading - "Demo data" alone needs more room than a fifth of the screen. So
+     the strip scrolls sideways inside itself and the labels keep their width.
+     The strip scrolls; the page still must not, which is why the overflow lives
+     here and not on an ancestor. */
+  .viewseg-tabs {
+    align-self: stretch;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .viewseg-tabs .viewseg-btn {
+    flex: 0 0 auto;
+    padding: 10px 14px;
+    font-size: 12.5px;
+    white-space: nowrap;
+  }
 
   .kpi-row { grid-template-columns: 1fr 1fr; gap: 10px; }
   .kpi { padding: 14px; }
