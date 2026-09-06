@@ -208,12 +208,62 @@ window.RoadCrew = window.RoadCrew || {};
     return state;
   }
 
+  // Bring a previously saved database up to date with the current seed.
+  //
+  // A browser that saved its state before `products` and `sales` existed keeps
+  // returning a state without them, so the campaign reports rendered "No results
+  // yet" forever even though the seed carries the data. The same applies to a
+  // field added to an existing record - brands gained `reportPassword`, and a
+  // stale brand record without it could never be unlocked.
+  //
+  // Only ever ADDS what is missing. A value the user has changed is never
+  // overwritten, and a record they created is never touched.
+  function migrate(state) {
+    var changed = false;
+    var key, i, j;
+
+    for (key in SEED) {
+      if (!Object.prototype.hasOwnProperty.call(SEED, key)) { continue; }
+
+      // Whole collection (or settings object) the seed has gained since.
+      if (!Object.prototype.hasOwnProperty.call(state, key)) {
+        state[key] = deepCopy(SEED[key]);
+        changed = true;
+        continue;
+      }
+
+      // Fields added to a seeded record that the stored copy predates.
+      if (Object.prototype.toString.call(SEED[key]) !== '[object Array]') { continue; }
+      for (i = 0; i < SEED[key].length; i++) {
+        var seeded = SEED[key][i];
+        for (j = 0; j < state[key].length; j++) {
+          if (state[key][j].id !== seeded.id) { continue; }
+          var field;
+          for (field in seeded) {
+            if (!Object.prototype.hasOwnProperty.call(seeded, field)) { continue; }
+            if (!Object.prototype.hasOwnProperty.call(state[key][j], field)) {
+              state[key][j][field] = seeded[field];
+              changed = true;
+            }
+          }
+          break;
+        }
+      }
+    }
+
+    return changed;
+  }
+
   function load() {
     var raw = readRaw();
     if (raw) {
       try {
         var parsed = JSON.parse(raw);
         if (isValidState(parsed)) {
+          if (migrate(parsed)) {
+            memoryState = parsed;
+            return save(parsed);
+          }
           memoryState = parsed;
           return parsed;
         }
