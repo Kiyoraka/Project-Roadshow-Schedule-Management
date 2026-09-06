@@ -16,7 +16,7 @@ window.RoadCrew = window.RoadCrew || {};
   // it - which is what would bounce a valid session back to the landing page forever.
   var ROLE_HOMES = {
     admin: 'admin/dashboard.html',
-    client: 'client/schedules.html',
+    client: 'client/dashboard.html',
     staff: 'staff/calendar.html'
   };
 
