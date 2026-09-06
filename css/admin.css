@@ -1,0 +1,480 @@
+/* RoadCrew - admin.css
+   Admin shell and dashboard, shared by dashboard / schedules / users / settings.
+
+   Desktop  = artboards 02 and 03 (1280px)
+   Mobile   = artboards 08, 09 and 10 (390px) - the same pages below 768px
+   Drawer   = artboard 04 (440px), structural rules live in base.css
+
+   Metrics carried from the canvas; navy/blue swapped for red tokens.
+
+   Port note: the brief called for a hamburger below 768px, but artboards 08-10
+   show an app bar plus a four-item bottom nav instead. The canvas wins.
+   -------------------------------------------------------------------------- */
+
+.admin { min-height: 100vh; display: flex; background: var(--surface-alt); }
+
+/* -------------------------------------------------------------- sidebar -- */
+
+.side {
+  width: var(--w-sidebar);
+  flex: none;
+  background: var(--brand-900);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+}
+
+.side-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px 24px;
+}
+.side-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--r-tile);
+  background: var(--brand);
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+  flex: none;
+}
+.side-word {
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.side-nav { display: flex; flex-direction: column; }
+
+.side-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 42px;
+  padding: 0 20px;
+  color: rgba(255, 255, 255, .72);
+  font-size: 14px;
+  border-left: 3px solid transparent;
+  white-space: nowrap;
+  transition: background .12s ease, color .12s ease;
+}
+.side-item:hover { background: var(--brand-800); color: #fff; }
+.side-item.is-active {
+  background: var(--brand-800);
+  border-left-color: var(--brand);
+  color: #fff;
+  font-weight: 600;
+}
+/* Hidden at full width so the sidebar matches the canvas exactly; it only
+   appears once the sidebar collapses to the icon rail, where a bare text label
+   would not fit. Nothing new is added to the designed state. */
+.side-item-initial {
+  display: none;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.side-spacer { flex: 1; }
+
+.side-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  border-top: 1px solid rgba(255, 255, 255, .1);
+}
+.side-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--brand);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  flex: none;
+}
+.side-who { min-width: 0; }
+.side-name { color: #fff; font-size: 13px; font-weight: 600; }
+.side-logout {
+  color: rgba(255, 255, 255, .55);
+  font-size: 11.5px;
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
+}
+.side-logout:hover { color: #fff; }
+
+/* ---------------------------------------------------------------- shell -- */
+
+.main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+.topbar {
+  height: var(--h-topbar);
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 24px;
+  flex: none;
+}
+.topbar-title { font-size: 24px; font-weight: 700; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+
+.date-pill {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--surface-alt);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  padding: 6px 14px;
+  white-space: nowrap;
+}
+.topbar-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--brand);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  flex: none;
+}
+
+.content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1440px;
+  width: 100%;
+}
+
+/* App bar and bottom nav exist only on the mobile shell */
+.appbar { display: none; }
+.botnav { display: none; }
+
+/* ------------------------------------------------------------- kpi row -- */
+
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.kpi {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+.kpi-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.kpi-value { font-size: 32px; font-weight: 700; margin-top: 8px; }
+.kpi-sub { font-size: 12px; color: var(--ink-muted); margin-top: 2px; }
+
+/* Attention variant - canvas used a red-tinted card for the two KPIs that need
+   action. It keeps that role here, sitting on the danger tint rather than the
+   brand so it stays distinct from the shell. */
+.kpi-alert {
+  background: var(--danger-050);
+  border-color: var(--danger-200);
+  box-shadow: none;
+}
+.kpi-alert .kpi-label,
+.kpi-alert .kpi-sub { color: var(--danger); }
+.kpi-alert .kpi-value { color: var(--danger); }
+
+/* --------------------------------------------------------------- panels -- */
+
+.panel-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+.panel-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
+.panel-title-tight { margin-bottom: 12px; }
+
+/* --------------------------------------------------------- week strip --- */
+
+.week-head {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+.week-day {
+  text-align: center;
+  padding: 8px 4px;
+  border-radius: var(--r-ctl);
+}
+.week-dow { font-size: 11px; font-weight: 600; color: var(--ink-muted); }
+.week-num { font-size: 14px; font-weight: 600; margin-top: 2px; }
+.week-day.is-today { background: var(--brand-050); }
+.week-day.is-today .week-dow,
+.week-day.is-today .week-num { color: var(--brand); font-weight: 700; }
+
+.week-lanes {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-top: 8px;
+  min-height: 120px;
+}
+.week-lane { display: flex; flex-direction: column; gap: 6px; }
+.week-lane.is-today {
+  background: var(--brand-050);
+  border-radius: var(--r-ctl);
+  padding: 4px;
+}
+
+.ev {
+  border-left: 3px solid var(--ev-color, var(--brand));
+  background: var(--ev-tint, var(--surface-alt));
+  border-radius: 6px;
+  padding: 6px 8px;
+  cursor: pointer;
+  text-align: left;
+  border-top: 0; border-right: 0; border-bottom: 0;
+  width: 100%;
+}
+.ev:hover { filter: brightness(.97); }
+.ev-name { font-size: 11.5px; font-weight: 600; }
+.ev-who  { font-size: 10.5px; color: var(--ink-muted); }
+
+/* ------------------------------------------------------------ check-ins -- */
+
+.feed { display: flex; flex-direction: column; gap: 14px; }
+.feed-row { display: flex; align-items: center; gap: 12px; }
+.feed-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  flex: none;
+  object-fit: cover;
+}
+.feed-who { flex: 1; min-width: 0; }
+.feed-name { font-size: 14px; font-weight: 600; }
+.feed-place { font-size: 12px; color: var(--ink-muted); }
+.feed-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--r-ctl);
+  object-fit: cover;
+  flex: none;
+}
+.feed-time { font-size: 12px; font-weight: 600; color: var(--success); }
+.feed-sep { height: 1px; background: var(--line); }
+
+/* ------------------------------------------------------ region coverage -- */
+
+.grid-table {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  font-size: 14px;
+}
+.grid-th {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--ink-muted);
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.grid-td { padding: 12px; border-bottom: 1px solid var(--line); }
+.grid-table > .grid-td:nth-last-child(-n+4) { border-bottom: 0; }
+
+/* ---------------------------------------------- mobile "this week" list -- */
+
+.mweek { display: flex; flex-direction: column; gap: 8px; }
+.mweek-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-left: 3px solid var(--ev-color, var(--brand));
+  background: var(--ev-tint, var(--surface-alt));
+  border-radius: var(--r-ctl);
+  padding: 10px 12px;
+  text-align: left;
+  width: 100%;
+  border-top: 0; border-right: 0; border-bottom: 0;
+}
+.mweek-date { text-align: center; width: 34px; flex: none; }
+.mweek-day { font-size: 15px; font-weight: 700; }
+.mweek-mon { font-size: 9.5px; font-weight: 600; color: var(--ink-muted); }
+.mweek-body { flex: 1; min-width: 0; }
+.mweek-name { font-size: 13px; font-weight: 600; }
+.mweek-meta { font-size: 11px; color: var(--ink-muted); }
+
+/* -------------------------------------------------- 1100px  icon rail --- */
+
+@media (max-width: 1100px) {
+  .side { width: var(--w-rail); }
+  .side-word,
+  .side-item-label,
+  .side-who { display: none; }
+  .side-brand { justify-content: center; padding: 0 0 24px; }
+  .side-item { justify-content: center; padding: 0; gap: 0; }
+  .side-item-initial { display: block; }
+  .side-foot { justify-content: center; padding: 16px 0; }
+  .content { padding: 20px; }
+  .panel-row { grid-template-columns: 1fr; }
+}
+
+/* --------------------------------------- 768px  mobile shell (08/09/10) -- */
+
+@media (max-width: 768px) {
+  .admin { display: block; }
+  .side { display: none; }
+  .main { min-height: 100vh; padding-bottom: var(--h-bottomnav); }
+
+  .topbar { display: none; }
+
+  .appbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: var(--h-header);
+    padding: 0 16px;
+    background: var(--brand-900);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+  .appbar-mark {
+    width: 26px;
+    height: 26px;
+    border-radius: var(--r-tile);
+    background: var(--brand);
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    font-weight: 800;
+    color: #fff;
+    flex: none;
+  }
+  .appbar-title {
+    flex: 1;
+    min-width: 0;
+    font-size: 15px;
+    font-weight: 800;
+    color: #fff;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .appbar-pill {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, .75);
+    background: rgba(255, 255, 255, .1);
+    border-radius: var(--r-pill);
+    padding: 4px 10px;
+    white-space: nowrap;
+  }
+  .appbar-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--brand);
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    flex: none;
+  }
+
+  .content { padding: 16px; gap: 14px; }
+
+  .kpi-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .kpi { padding: 14px; }
+  .kpi-label { font-size: 11px; }
+  .kpi-value { font-size: 26px; margin-top: 4px; }
+  .kpi-sub { display: none; }
+
+  .panel { padding: 16px; }
+  .panel-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+
+  /* The seven-column week grid does not survive a phone - artboard 08 replaces
+     it with a stacked list, so the desktop strip is hidden and .mweek shows. */
+  .week-head, .week-lanes { display: none; }
+  .mweek { display: flex; }
+
+  .feed { gap: 12px; }
+  .feed-row { gap: 10px; }
+  .feed-avatar { width: 34px; height: 34px; font-size: 13px; }
+  .feed-name { font-size: 13.5px; }
+  .feed-place { font-size: 11.5px; }
+  .feed-thumb { width: 42px; height: 42px; }
+  .feed-time { font-size: 11.5px; }
+
+  .grid-table { grid-template-columns: 2fr 1fr 1fr 1fr; font-size: 12.5px; }
+  .grid-th { font-size: 10px; padding: 8px 6px; }
+  .grid-td { padding: 10px 6px; }
+
+  .botnav {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    align-items: center;
+    height: var(--h-bottomnav);
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 30;
+  }
+  .botnav-item {
+    text-align: center;
+    color: var(--ink-faint);
+    background: none;
+    border: 0;
+    padding: 0;
+  }
+  .botnav-item.is-active { color: var(--brand); }
+  .botnav-glyph {
+    width: 18px;
+    height: 16px;
+    border: 2px solid currentColor;
+    border-radius: var(--r-xs);
+    margin: 0 auto 3px;
+  }
+  .botnav-glyph-round { width: 16px; height: 16px; border-radius: 50%; }
+  .botnav-glyph-diamond { width: 16px; height: 16px; border-radius: 5px; transform: rotate(45deg); }
+  .botnav-label { font-size: 10px; font-weight: 600; }
+  .botnav-item.is-active .botnav-label { font-weight: 700; }
+}
+
+/* Desktop-only helper: the mobile week list stays hidden above the breakpoint */
+.mweek { display: none; }
+@media (max-width: 768px) { .mweek { display: flex; } }
