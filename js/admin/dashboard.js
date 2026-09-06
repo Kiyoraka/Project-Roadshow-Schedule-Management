@@ -19,9 +19,15 @@ window.RoadCrew = window.RoadCrew || {};
 
   function byId(id) { return document.getElementById(id); }
 
-  // Pages under admin/ reach seed asset paths (which are root-relative) via '../'
+  // Pages under admin/ reach seed asset paths (which are root-relative) via '../'.
+  // An uploaded check-in photo is a data URL, not a path, and must be left alone -
+  // prefixing one produced '../data:image/jpeg;base64,...', which the browser then
+  // requested as a URL, 404ing on every render of the check-in feed.
   function asset(path) {
-    return '../' + String(path || '');
+    var p = String(path || '');
+    if (p === '') { return ''; }
+    if (p.indexOf('data:') === 0) { return p; }
+    return '../' + p;
   }
 
   // Light tint of a brand colour, matching the canvas event-chip treatment.

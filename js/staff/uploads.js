@@ -22,7 +22,14 @@ window.RoadCrew = window.RoadCrew || {};
                      'July', 'August', 'September', 'October', 'November', 'December'];
 
   function byId(id) { return document.getElementById(id); }
-  function asset(p) { return '../' + String(p || ''); }
+  // Seed photos are root-relative paths; an uploaded photo is a data URL and must
+  // be passed through untouched, or it becomes '../data:image/...' and 404s.
+  function asset(p) {
+    var v = String(p || '');
+    if (v === '') { return ''; }
+    if (v.indexOf('data:') === 0) { return v; }
+    return '../' + v;
+  }
 
   function nameOf(collection, id) {
     var rec = R.db.byId(collection, id);
