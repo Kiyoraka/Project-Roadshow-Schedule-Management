@@ -386,6 +386,14 @@
 .viewseg-btn:hover { background: var(--surface-alt); }
 .viewseg-btn.is-active { background: var(--brand); color: #fff; }
 
+/* The Schedules control lives inside a row toolbar, where it hugs its buttons.
+   The Settings tab strip is a direct child of .content, which is a column, so
+   without this it would stretch the full width of a now-uncapped page. It also
+   sits a size up: this one is page-level navigation, not a view toggle beside
+   four filters. */
+.viewseg-tabs { align-self: flex-start; max-width: 100%; }
+.viewseg-tabs .viewseg-btn { padding: 11px 24px; font-size: 14px; }
+
 .filter {
   height: 36px;
   border: 1px solid var(--line);
@@ -712,6 +720,11 @@
     gap: 10px;
   }
   .pager-btns { justify-content: center; flex-wrap: wrap; }
+
+  /* Four tabs do not fit a phone at the desktop size, and shrinking the text
+     any further would hurt more than the tighter padding does. */
+  .viewseg-tabs { align-self: stretch; }
+  .viewseg-tabs .viewseg-btn { flex: 1; padding: 10px 6px; font-size: 12.5px; }
 
   .kpi-row { grid-template-columns: 1fr 1fr; gap: 10px; }
   .kpi { padding: 14px; }

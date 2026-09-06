@@ -312,8 +312,60 @@ window.RoadCrew = window.RoadCrew || {};
     if (el) { el.addEventListener(event, fn); }
   }
 
+  /* ----------------------------------------------------------------- tabs -- */
+
+  // Four panels that used to stack into a very long scroll. Each one is already
+  // self-contained - its own fields, its own load and save - so switching is
+  // purely a visibility change and none of those functions know this exists.
+  var TABS = ['company', 'brands', 'checkin', 'demo'];
+
+  function showTab(name) {
+    var want = TABS.indexOf(name) === -1 ? TABS[0] : name;
+    var i;
+
+    for (i = 0; i < TABS.length; i++) {
+      var panel = byId('tab-' + TABS[i]);
+      if (panel) { panel.hidden = TABS[i] !== want; }
+    }
+
+    var btns = document.querySelectorAll('[data-tab]');
+    for (i = 0; i < btns.length; i++) {
+      btns[i].className = 'viewseg-btn' +
+        (btns[i].getAttribute('data-tab') === want ? ' is-active' : '');
+    }
+
+    // The hash is what survives a save or a reload. Written without pushing a
+    // history entry, so Back leaves the page rather than walking the tabs.
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState(null, '', '#' + want);
+    } else {
+      window.location.hash = want;
+    }
+  }
+
+  // An unknown or missing hash falls back to the first tab rather than showing
+  // a page with every panel hidden.
+  function tabFromHash() {
+    var raw = String(window.location.hash || '').replace('#', '');
+    return TABS.indexOf(raw) === -1 ? TABS[0] : raw;
+  }
+
   function wire() {
     var i;
+
+    var tabs = document.querySelectorAll('[data-tab]');
+    for (i = 0; i < tabs.length; i++) {
+      tabs[i].addEventListener('click', function (ev) {
+        showTab(ev.currentTarget.getAttribute('data-tab'));
+      });
+    }
+
+    // Arriving at #brands while already on this page is a hash change, not a
+    // load, so init never runs again. Without this a link to a specific tab
+    // works from anywhere except the page it points at.
+    window.addEventListener('hashchange', function () {
+      showTab(tabFromHash());
+    });
 
     var outs = document.querySelectorAll('[data-logout]');
     for (i = 0; i < outs.length; i++) {
@@ -356,6 +408,9 @@ window.RoadCrew = window.RoadCrew || {};
     resetBrandForm();
     renderBrands();
     wire();
+    // Every panel is loaded regardless of which tab is showing, so switching
+    // never waits on anything and a save on a hidden panel is impossible.
+    showTab(tabFromHash());
   }
 
   if (document.readyState === 'loading') {

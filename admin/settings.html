@@ -56,8 +56,18 @@
 
     <main class="content">
 
+      <!-- Tab strip. Reuses .viewseg, the same segmented control the Schedules
+           page uses for List and Month, so both pages teach one gesture. The
+           active tab is mirrored into the URL hash by settings.js. -->
+      <div class="viewseg viewseg-tabs" id="set-tabs">
+        <button class="viewseg-btn is-active" type="button" data-tab="company">Company</button>
+        <button class="viewseg-btn" type="button" data-tab="brands">Brands</button>
+        <button class="viewseg-btn" type="button" data-tab="checkin">Check-in</button>
+        <button class="viewseg-btn" type="button" data-tab="demo">Demo data</button>
+      </div>
+
       <!-- ============ 1. COMPANY PROFILE ============ -->
-      <section class="panel set-panel">
+      <section class="panel set-panel" id="tab-company">
         <div class="panel-title">Company profile</div>
 
         <div class="field">
@@ -80,7 +90,7 @@
       </section>
 
       <!-- ============ 2. BRANDS ============ -->
-      <section class="panel set-panel">
+      <section class="panel set-panel" id="tab-brands" hidden>
         <div class="panel-title">Brands</div>
         <p class="muted">The report password is what opens that brand&rsquo;s campaign report on
         the public site.</p>
@@ -124,7 +134,7 @@
       </section>
 
       <!-- ============ 3. CHECK-IN RULES ============ -->
-      <section class="panel set-panel">
+      <section class="panel set-panel" id="tab-checkin" hidden>
         <div class="panel-title">Check-in rules</div>
 
         <div class="field">
@@ -155,7 +165,7 @@
       </section>
 
       <!-- ============ 4. DEMO DATA ============ -->
-      <section class="panel set-panel">
+      <section class="panel set-panel" id="tab-demo" hidden>
         <div class="panel-title">Demo data</div>
         <p class="muted">This demo keeps every brand, schedule, user and check-in photo in
         your own browser &ndash; nothing is sent to a server. Resetting restores the original
