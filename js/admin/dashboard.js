@@ -112,10 +112,25 @@ window.RoadCrew = window.RoadCrew || {};
       }
     }
 
+    // Count duty pairs that have a photo, not check-ins dated today.
+    // Counting raw check-ins let the tile read 2 / 1 - a photo against a schedule
+    // that does not cover today still counted, and a promoter who uploaded twice
+    // counted twice, so the figure could exceed the number of people on duty.
     var checkins = R.db.checkins();
     var doneToday = 0;
-    for (i = 0; i < checkins.length; i++) {
-      if (checkins[i].date === today) { doneToday++; }
+    for (i = 0; i < schedules.length; i++) {
+      if (!covers(schedules[i], today)) { continue; }
+      for (j = 0; j < schedules[i].spIds.length; j++) {
+        var k;
+        for (k = 0; k < checkins.length; k++) {
+          if (checkins[k].date === today &&
+              checkins[k].userId === schedules[i].spIds[j] &&
+              checkins[k].scheduleId === schedules[i].id) {
+            doneToday++;
+            break;
+          }
+        }
+      }
     }
 
     var unassigned = [];
