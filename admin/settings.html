@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settings - RoadCrew</title>
+<link rel="icon" href="../img/logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+<div class="admin">
+
+  <!-- ============ SIDEBAR (desktop) ============ -->
+  <aside class="side">
+    <div class="side-brand">
+      <div class="side-mark">R</div>
+      <div class="side-word">RoadCrew</div>
+    </div>
+    <nav class="side-nav">
+      <a class="side-item" href="dashboard.html"><span class="side-item-initial">M</span><span class="side-item-label">Main</span></a>
+      <a class="side-item" href="schedules.html"><span class="side-item-initial">S</span><span class="side-item-label">Schedules</span></a>
+      <a class="side-item" href="users.html"><span class="side-item-initial">U</span><span class="side-item-label">Users</span></a>
+      <a class="side-item is-active" href="settings.html"><span class="side-item-initial">C</span><span class="side-item-label">Settings</span></a>
+    </nav>
+    <div class="side-spacer"></div>
+    <div class="side-foot">
+      <div class="side-avatar" id="side-initial">C</div>
+      <div class="side-who">
+        <div class="side-name" id="side-name">Coordinator</div>
+        <button class="side-logout" type="button" data-logout>Log out</button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+
+    <!-- ============ APP BAR (mobile, artboard 09) ============ -->
+    <header class="appbar">
+      <div class="appbar-mark">R</div>
+      <div class="appbar-title">Settings</div>
+      <div class="appbar-avatar" id="appbar-initial">C</div>
+    </header>
+
+    <!-- ============ TOP BAR (desktop) ============ -->
+    <header class="topbar">
+      <div class="topbar-title">Settings</div>
+      <div class="topbar-right">
+        <div class="date-pill" id="topbar-date">&nbsp;</div>
+        <div class="topbar-avatar" id="topbar-initial">C</div>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- ============ 1. COMPANY PROFILE ============ -->
+      <section class="panel">
+        <div class="panel-title">Company profile</div>
+
+        <div class="field">
+          <label class="field-label" for="s-company">Company name <span class="req">*</span></label>
+          <input class="input" id="s-company" type="text" placeholder="RoadCrew Activations">
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label" for="s-email">Contact email</label>
+            <input class="input" id="s-email" type="email" placeholder="hello@roadcrew.demo">
+          </div>
+          <div class="field">
+            <label class="field-label" for="s-phone">Contact phone</label>
+            <input class="input" id="s-phone" type="tel" placeholder="03-0000 0000">
+          </div>
+        </div>
+
+        <button class="btn btn-primary" type="button" id="s-save">Save company profile</button>
+      </section>
+
+      <!-- ============ 2. BRANDS ============ -->
+      <section class="panel">
+        <div class="panel-title">Brands</div>
+
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Brand</th>
+                <th>Schedules</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="brand-rows"></tbody>
+          </table>
+        </div>
+
+        <hr class="hr">
+
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label" for="b-name">Brand name <span class="req">*</span></label>
+            <input class="input" id="b-name" type="text" placeholder="e.g. Kapal Api">
+          </div>
+          <div class="field">
+            <label class="field-label" for="b-color">Colour</label>
+            <input class="input" id="b-color" type="color" value="#C0392B">
+          </div>
+        </div>
+
+        <div class="row row-gap">
+          <button class="btn btn-primary" type="button" id="b-add">Add brand</button>
+          <button class="btn" type="button" id="b-cancel" hidden>Cancel</button>
+        </div>
+      </section>
+
+      <!-- ============ 3. CHECK-IN RULES ============ -->
+      <section class="panel">
+        <div class="panel-title">Check-in rules</div>
+
+        <div class="field">
+          <label class="field-label">Photo required</label>
+          <label class="row row-gap" for="c-photo">
+            <input id="c-photo" type="checkbox">
+            <span class="muted">Promoters must attach a photo when they check in.</span>
+          </label>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label" for="c-start">Check-in window opens</label>
+            <input class="input" id="c-start" type="time">
+          </div>
+          <div class="field">
+            <label class="field-label" for="c-end">Check-in window closes</label>
+            <input class="input" id="c-end" type="time">
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="c-max">Maximum photos per event</label>
+          <input class="input" id="c-max" type="number" min="1" max="20" step="1">
+        </div>
+
+        <button class="btn btn-primary" type="button" id="c-save">Save check-in rules</button>
+      </section>
+
+      <!-- ============ 4. DEMO DATA ============ -->
+      <section class="panel">
+        <div class="panel-title">Demo data</div>
+        <p class="muted">This demo keeps every brand, schedule, user and check-in photo in
+        your own browser &ndash; nothing is sent to a server. Resetting restores the original
+        sample data, signs you out and cannot be undone.</p>
+        <hr class="hr">
+        <button class="btn btn-danger" type="button" id="demo-reset">Reset demo data</button>
+      </section>
+
+    </main>
+
+    <!-- ============ BOTTOM NAV (mobile) ============ -->
+    <nav class="botnav">
+      <a class="botnav-item" href="dashboard.html"><div class="botnav-glyph"></div><div class="botnav-label">Main</div></a>
+      <a class="botnav-item" href="schedules.html"><div class="botnav-glyph"></div><div class="botnav-label">Schedules</div></a>
+      <a class="botnav-item" href="users.html"><div class="botnav-glyph botnav-glyph-round"></div><div class="botnav-label">Users</div></a>
+      <a class="botnav-item is-active" href="settings.html"><div class="botnav-glyph botnav-glyph-diamond"></div><div class="botnav-label">Settings</div></a>
+    </nav>
+
+  </div>
+</div>
+
+<!-- ============ CONFIRM MODAL ============ -->
+<div class="modal" id="confirm">
+  <div class="modal-box">
+    <div class="modal-title" id="confirm-title">Delete this brand?</div>
+    <div class="modal-text" id="confirm-text"></div>
+    <div class="modal-foot">
+      <button class="btn" type="button" id="confirm-no">Keep it</button>
+      <button class="btn btn-danger" type="button" id="confirm-yes">Delete brand</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/util.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/admin/settings.js"></script>
+</body>
+</html>
