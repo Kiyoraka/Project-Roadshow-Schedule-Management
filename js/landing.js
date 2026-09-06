@@ -1,5 +1,6 @@
 /* RoadCrew - js/landing.js
-   Public landing page behaviour: nav, login modal, report password gate, report.
+   Public landing page behaviour: nav, live hero stat, stat strip, lightbox,
+   login modal, report password gate, report, footer.
    Load order on index.html: data.js, util.js, auth.js, report.js, landing.js
    -------------------------------------------------------------------------- */
 
@@ -10,6 +11,8 @@ window.RoadCrew = window.RoadCrew || {};
 
   var U = R.util;
   var pendingBrandId = null;   // brand awaiting its password
+  var shots = [];              // gallery entries for the lightbox
+  var shotIndex = 0;
 
   function byId(id) { return document.getElementById(id); }
 
@@ -37,11 +40,22 @@ window.RoadCrew = window.RoadCrew || {};
 
   function open(id) {
     var el = byId(id);
-    if (el) { el.className = 'modal is-open'; }
+    if (el) { el.className = el.className.replace(/\s*is-open/, '') + ' is-open'; }
   }
   function close(id) {
     var el = byId(id);
-    if (el) { el.className = 'modal'; }
+    if (el) { el.className = el.className.replace(/\s*is-open/, ''); }
+  }
+
+  function wireAnchor(el) {
+    el.addEventListener('click', function (ev) {
+      var href = this.getAttribute('href') || '';
+      if (href.charAt(0) !== '#') { return; }
+      var target = document.getElementById(href.slice(1));
+      if (!target) { return; }
+      ev.preventDefault();
+      goTo(target);
+    });
   }
 
   /* ------------------------------------------------------------ nav ----- */
@@ -61,17 +75,16 @@ window.RoadCrew = window.RoadCrew || {};
     var items = document.querySelectorAll('.nav-link');
     var i;
     for (i = 0; i < items.length; i++) {
-      items[i].addEventListener('click', function (ev) {
-        var href = this.getAttribute('href') || '';
-        if (href.charAt(0) !== '#') { return; }
-        var target = document.getElementById(href.slice(1));
-        if (!target) { return; }
-        ev.preventDefault();
-        goTo(target);
+      wireAnchor(items[i]);
+      items[i].addEventListener('click', function () {
         if (links) { links.className = 'nav-links'; }
         if (burger) { burger.setAttribute('aria-expanded', 'false'); }
       });
     }
+
+    // Any other in-page anchor - hero "See a report", footer links.
+    var extra = document.querySelectorAll('[data-scroll], .footer-link[href^="#"]');
+    for (i = 0; i < extra.length; i++) { wireAnchor(extra[i]); }
 
     // Mark whichever section currently owns the top of the viewport.
     var ids = ['home', 'about', 'gallery', 'info'];
@@ -89,6 +102,111 @@ window.RoadCrew = window.RoadCrew || {};
     }
     window.addEventListener('scroll', spy);
     spy();
+  }
+
+  /* ------------------------------------------------- hero + stat strip --- */
+
+  // Everything here is read from the store, so the numbers stay true as data
+  // changes rather than going stale in the markup.
+  function renderHero() {
+    var sales = R.db.sales();
+    var units = 0;
+    var i;
+    for (i = 0; i < sales.length; i++) { units += sales[i].units || 0; }
+
+    var num = byId('hero-stat-units');
+    var sub = byId('hero-stat-sub');
+    if (num) { num.textContent = units.toLocaleString(); }
+    if (sub) {
+      sub.textContent = R.db.schedules().length + ' schedules · ' +
+                        R.db.outlets().length + ' outlets';
+    }
+
+    var host = byId('hero-clients');
+    if (host) {
+      var brands = R.db.brands();
+      var html = '';
+      for (i = 0; i < brands.length; i++) {
+        html += '<span class="hero-client">' +
+                  '<span class="hero-client-dot" style="background:' + brands[i].color + '"></span>' +
+                  U.escapeHtml(brands[i].name) +
+                '</span>';
+      }
+      host.innerHTML = html;
+    }
+  }
+
+  function renderStats() {
+    var host = byId('stats');
+    if (!host) { return; }
+
+    var users = R.db.users();
+    var promoters = 0;
+    var i;
+    for (i = 0; i < users.length; i++) {
+      if (users[i].role === 'staff') { promoters++; }
+    }
+
+    var rows = [
+      { num: R.db.brands().length,  label: 'Brands' },
+      { num: R.db.outlets().length, label: 'Outlets' },
+      { num: R.db.regions().length, label: 'Regions' },
+      { num: promoters,             label: 'Promoters' }
+    ];
+
+    var html = '';
+    for (i = 0; i < rows.length; i++) {
+      html += '<div class="stat">' +
+                '<div class="stat-num">' + rows[i].num + '</div>' +
+                '<div class="stat-label">' + rows[i].label + '</div>' +
+              '</div>';
+    }
+    host.innerHTML = html;
+  }
+
+  /* --------------------------------------------------------- lightbox --- */
+
+  function showShot(index) {
+    if (!shots.length) { return; }
+    shotIndex = (index + shots.length) % shots.length;
+    var img = byId('lightbox-img');
+    var cap = byId('lightbox-cap');
+    if (img) { img.src = shots[shotIndex].src; img.alt = shots[shotIndex].alt; }
+    if (cap) { cap.textContent = shots[shotIndex].caption; }
+  }
+
+  function wireLightbox() {
+    var tiles = document.querySelectorAll('.shot-tile');
+    var i;
+    for (i = 0; i < tiles.length; i++) {
+      var img = tiles[i].querySelector('img');
+      var cap = tiles[i].querySelector('figcaption');
+      shots.push({
+        src: img ? img.getAttribute('src') : '',
+        alt: img ? img.getAttribute('alt') : '',
+        caption: cap ? cap.textContent : ''
+      });
+      tiles[i].addEventListener('click', function () {
+        showShot(parseInt(this.getAttribute('data-shot'), 10) || 0);
+        open('lightbox');
+      });
+    }
+
+    var closers = document.querySelectorAll('[data-close-lightbox]');
+    for (i = 0; i < closers.length; i++) {
+      closers[i].addEventListener('click', function () { close('lightbox'); });
+    }
+    var prev = document.querySelector('[data-lightbox-prev]');
+    var next = document.querySelector('[data-lightbox-next]');
+    if (prev) { prev.addEventListener('click', function (ev) { ev.stopPropagation(); showShot(shotIndex - 1); }); }
+    if (next) { next.addEventListener('click', function (ev) { ev.stopPropagation(); showShot(shotIndex + 1); }); }
+
+    document.addEventListener('keydown', function (ev) {
+      var box = byId('lightbox');
+      if (!box || box.className.indexOf('is-open') === -1) { return; }
+      if (ev.key === 'ArrowLeft') { showShot(shotIndex - 1); }
+      if (ev.key === 'ArrowRight') { showShot(shotIndex + 1); }
+    });
   }
 
   /* ---------------------------------------------------------- login ----- */
@@ -194,6 +312,30 @@ window.RoadCrew = window.RoadCrew || {};
 
   /* -------------------------------------------------- report cards ------ */
 
+  // A tiny seven-bar sparkline of the brand's week. It is blurred by CSS and
+  // sits under a lock, so it hints at the shape of a result without revealing it.
+  function sparkSvg(data, color) {
+    var W = 140, H = 40, gap = 4;
+    var n = data.week.length || 7;
+    var barW = (W - gap * (n - 1)) / n;
+    var peak = data.peak || 1;
+    var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">';
+    var i;
+    for (i = 0; i < n; i++) {
+      var units = data.week[i] ? data.week[i].units : 0;
+      var h = Math.max(2, Math.round((units / peak) * (H - 4)));
+      svg += '<rect x="' + (i * (barW + gap)).toFixed(1) + '" y="' + (H - h) +
+             '" width="' + barW.toFixed(1) + '" height="' + h + '" rx="2" fill="' + color + '"></rect>';
+    }
+    return svg + '</svg>';
+  }
+
+  var LOCK_SVG =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<rect x="4" y="11" width="16" height="10" rx="2"></rect>' +
+    '<path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>';
+
   function renderCards() {
     var host = byId('report-cards');
     if (!host) { return; }
@@ -204,13 +346,23 @@ window.RoadCrew = window.RoadCrew || {};
 
     for (i = 0; i < brands.length; i++) {
       var b = brands[i];
+      var teaser = '';
+      if (b.hasData) {
+        var data = R.report.build(b.id);
+        if (data && !data.empty) {
+          teaser = '<div class="report-teaser">' + sparkSvg(data, b.color) +
+                   '<div class="report-teaser-lock">' + LOCK_SVG + '</div></div>';
+        }
+      }
+
       html +=
-        '<div class="report-card">' +
+        '<div class="report-card" style="--rc:' + b.color + '">' +
           '<div class="report-card-top">' +
             '<span class="report-dot" style="background:' + b.color + '"></span>' +
             '<span class="report-card-name">' + U.escapeHtml(b.name) + '</span>' +
           '</div>' +
           '<div class="report-card-sub">Weekly sampling results</div>' +
+          teaser +
           '<div class="report-lock">Password required</div>' +
           (b.hasData
             ? '<button class="btn btn-primary" type="button" data-report="' + U.escapeHtml(b.id) + '">View report</button>'
@@ -361,10 +513,15 @@ window.RoadCrew = window.RoadCrew || {};
     var email = byId('footer-email');
     var phone = byId('footer-phone');
     var copy = byId('footer-copy');
+    var cta = byId('footer-cta-mail');
 
     if (email && s.contactEmail) {
       email.textContent = s.contactEmail;
       email.setAttribute('href', 'mailto:' + s.contactEmail);
+    }
+    if (cta && s.contactEmail) {
+      cta.setAttribute('href', 'mailto:' + s.contactEmail + '?subject=' +
+        encodeURIComponent('Roadshow enquiry'));
     }
     if (phone && s.contactPhone) {
       phone.textContent = s.contactPhone;
@@ -403,6 +560,9 @@ window.RoadCrew = window.RoadCrew || {};
     R.auth.consumeWrongPortalFlag();
 
     wireNav();
+    renderHero();
+    renderStats();
+    wireLightbox();
     wireLogin();
     renderCards();
     renderFooter();
@@ -412,13 +572,14 @@ window.RoadCrew = window.RoadCrew || {};
     // Escape closes whichever modal is on top.
     document.addEventListener('keydown', function (ev) {
       if (ev.key !== 'Escape') { return; }
+      close('lightbox');
       close('report-modal');
       close('gate-modal');
       close('login-modal');
     });
 
     // Clicking the scrim area closes that modal.
-    var boxes = ['login-modal', 'gate-modal', 'report-modal'];
+    var boxes = ['lightbox', 'login-modal', 'gate-modal', 'report-modal'];
     var i;
     for (i = 0; i < boxes.length; i++) {
       (function (id) {

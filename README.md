@@ -63,10 +63,10 @@ Passwords are editable per brand in **Settings → Brands**.
 
 **Public site** — `index.html`, one page with a sticky nav.
 
-- **Home** — the hero, with Log in.
-- **About** — what the agency does, and the three things the tool covers.
-- **Gallery** — six generated activation photographs (gpt-image-2), deliberately unbranded.
-- **Info** — a campaign report card per brand, opened with that brand's password.
+- **Home** — photo-led hero with a live stat card (units sampled, schedules, outlets) and the client list, all read from the store.
+- **About** — a live numbers strip (brands, outlets, regions, promoters), then three photo-and-text rows: Schedule, Team, Proof.
+- **Gallery** — a mosaic of six generated activation photographs (gpt-image-2), deliberately unbranded, with a lightbox.
+- **Info** — a report card per brand with a blurred sparkline teaser of its week behind a lock, opened with that brand's password.
 
 **Admin** — a desktop shell that collapses to an icon rail, then to a phone layout with a bottom nav.
 
@@ -92,7 +92,7 @@ admin/              dashboard, schedules, users, settings
 staff/              calendar, event, uploads
 css/                base (tokens and components), landing, admin, staff
 js/                 data, util, auth, calendar, report + one script per page
-img/                logo, avatars, check-in placeholders, gallery photographs
+img/                logo, avatars, check-in placeholders, gallery + about photographs
 ```
 
 `js/data.js` holds the seed and the storage layer. `js/util.js`, `js/auth.js`, `js/calendar.js` and `js/report.js` are shared. Every page loads them in that order and its own script last.

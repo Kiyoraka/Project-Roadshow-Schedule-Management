@@ -33,10 +33,28 @@
 
   <!-- ============ HOME / HERO ============ -->
   <section class="hero" id="home">
-    <div class="hero-copy">
-      <h1 class="hero-title">Every promoter, every outlet, every day, on one calendar.</h1>
-      <p class="hero-sub">Plan roadshows, assign your promoters, and get photo proof from the booth.</p>
-      <button class="hero-cta" type="button" data-open-login>Log in</button>
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <div class="hero-eyebrow">Sampling roadshows &middot; Malaysia</div>
+        <h1 class="hero-title">Every promoter, every outlet, every day, on one calendar.</h1>
+        <p class="hero-sub">Plan roadshows, assign your promoters, and get photo proof from the booth.</p>
+        <div class="hero-actions">
+          <button class="hero-cta" type="button" data-open-login>Log in</button>
+          <a class="hero-cta hero-cta-ghost" href="#info" data-scroll>See a report</a>
+        </div>
+        <div class="hero-clients" id="hero-clients"></div>
+      </div>
+
+      <div class="hero-visual">
+        <figure class="hero-photo">
+          <img src="img/gallery-01.jpg" alt="Promoters at a sampling booth serving shoppers">
+        </figure>
+        <div class="hero-stat">
+          <div class="hero-stat-num" id="hero-stat-units">&nbsp;</div>
+          <div class="hero-stat-label">units sampled across all campaigns</div>
+          <div class="hero-stat-sub" id="hero-stat-sub">&nbsp;</div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -51,21 +69,50 @@
         which outlet, which days &mdash; and gives every promoter their own schedule on their phone.
       </p>
     </div>
-    <div class="features">
-      <div class="feature">
-        <div class="feature-icon"><div class="feature-glyph feature-glyph-square"></div></div>
-        <div class="feature-title">Schedule</div>
-        <div class="feature-text">Month and list views, brand-coloured, conflict warnings.</div>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="story">
+      <div class="story-row">
+        <figure class="story-photo">
+          <img src="img/about-01.jpg" alt="Coordinator reviewing a printed schedule beside a tablet calendar">
+        </figure>
+        <div class="story-copy">
+          <div class="story-kicker">Schedule</div>
+          <h3 class="story-title">One calendar, every outlet</h3>
+          <p class="story-text">
+            Month and list views, brand-coloured, conflict warnings. A run that overlaps a
+            promoter&rsquo;s other booking is flagged before it is saved, not discovered on the day.
+          </p>
+        </div>
       </div>
-      <div class="feature">
-        <div class="feature-icon"><div class="feature-glyph feature-glyph-circle"></div></div>
-        <div class="feature-title">Team</div>
-        <div class="feature-text">Promoters by region, active or inactive, one tap to assign.</div>
+
+      <div class="story-row story-row-flip">
+        <figure class="story-photo">
+          <img src="img/about-02.jpg" alt="Promoter team gathered for a briefing beside a booth">
+        </figure>
+        <div class="story-copy">
+          <div class="story-kicker">Team</div>
+          <h3 class="story-title">Promoters by region, one tap to assign</h3>
+          <p class="story-text">
+            Promoters by region, active or inactive, one tap to assign. Each promoter sees only
+            their own days, on their own phone, with the outlet and shift for each one.
+          </p>
+        </div>
       </div>
-      <div class="feature">
-        <div class="feature-icon"><div class="feature-glyph feature-glyph-card"></div></div>
-        <div class="feature-title">Proof</div>
-        <div class="feature-text">Promoters check in with a photo from the outlet, coordinators see it live.</div>
+
+      <div class="story-row">
+        <figure class="story-photo">
+          <img src="img/about-03.jpg" alt="Promoter photographing her sampling booth with a phone">
+        </figure>
+        <div class="story-copy">
+          <div class="story-kicker">Proof</div>
+          <h3 class="story-title">A photo from the booth, seen live</h3>
+          <p class="story-text">
+            Promoters check in with a photo from the outlet, coordinators see it live. Every
+            activation carries its own evidence, dated and timed, without a single phone call.
+          </p>
+        </div>
       </div>
     </div>
   </section>
@@ -77,13 +124,31 @@
       <h2 class="section-title">From the floor</h2>
       <p class="section-lead">Booths, aisles and activations from recent campaigns.</p>
     </div>
-    <div class="gallery">
-      <figure class="shot-tile"><img src="img/gallery-01.jpg" alt="Sampling booth with backdrop banner"></figure>
-      <figure class="shot-tile"><img src="img/gallery-02.jpg" alt="Supermarket aisle with product shelving"></figure>
-      <figure class="shot-tile"><img src="img/gallery-03.jpg" alt="Promoter stand with a queue of shoppers"></figure>
-      <figure class="shot-tile"><img src="img/gallery-04.jpg" alt="Product display pyramid on a table"></figure>
-      <figure class="shot-tile"><img src="img/gallery-05.jpg" alt="Storefront entrance with signage"></figure>
-      <figure class="shot-tile"><img src="img/gallery-06.jpg" alt="Wide view of an event floor"></figure>
+    <div class="mosaic" id="mosaic">
+      <figure class="shot-tile shot-large" data-shot="0">
+        <img src="img/gallery-06.jpg" alt="Wide view of an activation floor with several booths">
+        <figcaption>Activation floor</figcaption>
+      </figure>
+      <figure class="shot-tile" data-shot="1">
+        <img src="img/gallery-01.jpg" alt="Sampling booth with backdrop banner">
+        <figcaption>Sampling booth</figcaption>
+      </figure>
+      <figure class="shot-tile" data-shot="2">
+        <img src="img/gallery-03.jpg" alt="Promoter stand with a queue of shoppers">
+        <figcaption>Promoter stand</figcaption>
+      </figure>
+      <figure class="shot-tile" data-shot="3">
+        <img src="img/gallery-02.jpg" alt="Supermarket aisle with product shelving">
+        <figcaption>Supermarket aisle</figcaption>
+      </figure>
+      <figure class="shot-tile" data-shot="4">
+        <img src="img/gallery-04.jpg" alt="Product display pyramid on a table">
+        <figcaption>Product display</figcaption>
+      </figure>
+      <figure class="shot-tile" data-shot="5">
+        <img src="img/gallery-05.jpg" alt="Storefront entrance with trolleys">
+        <figcaption>Storefront</figcaption>
+      </figure>
     </div>
   </section>
 
@@ -102,8 +167,15 @@
 
   <!-- ============ FOOTER ============ -->
   <footer class="site-footer">
-    <div class="footer-grid">
+    <div class="footer-cta">
+      <div class="footer-cta-copy">
+        <div class="footer-cta-title">Planning a roadshow?</div>
+        <div class="footer-cta-sub">Tell us the brand, the outlets and the dates. We handle the crew.</div>
+      </div>
+      <a class="footer-cta-btn" id="footer-cta-mail" href="#">Work with us</a>
+    </div>
 
+    <div class="footer-grid">
       <div class="footer-about">
         <div class="footer-brand">
           <span class="footer-mark">R</span>
@@ -137,7 +209,6 @@
         <a class="footer-link" id="footer-phone" href="#">&nbsp;</a>
         <span class="footer-link footer-link-plain">Kuala Lumpur, Malaysia</span>
       </div>
-
     </div>
 
     <div class="footer-bar">
@@ -145,6 +216,17 @@
       <span class="footer-note">Demo build</span>
     </div>
   </footer>
+
+  <!-- ============ LIGHTBOX ============ -->
+  <div class="modal lightbox" id="lightbox">
+    <button class="lightbox-close" type="button" data-close-lightbox aria-label="Close">&#10005;</button>
+    <button class="lightbox-nav lightbox-prev" type="button" data-lightbox-prev aria-label="Previous">&lsaquo;</button>
+    <figure class="lightbox-figure">
+      <img id="lightbox-img" alt="">
+      <figcaption id="lightbox-cap"></figcaption>
+    </figure>
+    <button class="lightbox-nav lightbox-next" type="button" data-lightbox-next aria-label="Next">&rsaquo;</button>
+  </div>
 
   <!-- ============ LOGIN MODAL ============ -->
   <div class="modal" id="login-modal">
