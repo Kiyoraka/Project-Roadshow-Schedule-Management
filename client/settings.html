@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settings - RoadCrew</title>
+<link rel="icon" href="../img/logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+<div class="admin">
+
+  <!-- ============ SIDEBAR (desktop) ============ -->
+  <aside class="side">
+    <div class="side-brand">
+      <div class="side-mark">R</div>
+      <div class="side-word">RoadCrew</div>
+    </div>
+    <nav class="side-nav">
+      <a class="side-item" href="dashboard.html"><span class="side-item-initial">M</span><span class="side-item-label">Main</span></a>
+      <a class="side-item" href="schedules.html"><span class="side-item-initial">S</span><span class="side-item-label">Schedules</span></a>
+      <a class="side-item is-active" href="settings.html"><span class="side-item-initial">C</span><span class="side-item-label">Settings</span></a>
+    </nav>
+    <div class="side-spacer"></div>
+    <div class="side-foot">
+      <div class="side-avatar" id="side-initial">C</div>
+      <div class="side-who">
+        <div class="side-name" id="side-name">Client service</div>
+        <div class="side-brand-name" id="side-brand">&nbsp;</div>
+        <button class="side-logout" type="button" data-logout>Log out</button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+
+    <!-- ============ APP BAR (mobile) ============ -->
+    <header class="appbar">
+      <div class="appbar-mark">R</div>
+      <div class="appbar-title">Settings</div>
+      <div class="appbar-avatar" id="appbar-initial">C</div>
+    </header>
+
+    <!-- ============ TOP BAR (desktop) ============ -->
+    <header class="topbar">
+      <div class="topbar-title">Settings</div>
+      <div class="topbar-right">
+        <div class="date-pill" id="topbar-date">&nbsp;</div>
+        <div class="topbar-avatar" id="topbar-initial">C</div>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- Two tabs, the same segmented control and hash behaviour the admin
+           Settings uses, so both pages teach one gesture. -->
+      <div class="viewseg viewseg-tabs" id="set-tabs">
+        <button class="viewseg-btn is-active" type="button" data-tab="profile">My profile</button>
+        <button class="viewseg-btn" type="button" data-tab="brand">My brand</button>
+      </div>
+
+      <!-- ============ 1. MY PROFILE ============ -->
+      <section class="panel set-panel" id="tab-profile">
+        <div class="panel-title">My profile</div>
+        <p class="muted">Your own account. To change your email or your brand, ask the
+        coordinator &ndash; both live on the admin Users screen.</p>
+
+        <div class="field">
+          <label class="field-label" for="p-name">Name <span class="req">*</span></label>
+          <input class="input" id="p-name" type="text" placeholder="Your full name">
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label" for="p-email">Email</label>
+            <input class="input" id="p-email" type="email" readonly>
+            <div class="caption">This is what you sign in with, so it is changed by the
+            coordinator rather than here.</div>
+          </div>
+          <div class="field">
+            <label class="field-label" for="p-phone">Phone</label>
+            <input class="input" id="p-phone" type="text" placeholder="012-000 0000">
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="p-password">New password</label>
+          <input class="input" id="p-password" type="text" placeholder="Leave blank to keep the current one">
+          <div class="caption">Shown as plain text on purpose &ndash; this is a demo, and the
+          password is stored in your browser unencrypted.</div>
+        </div>
+
+        <button class="btn btn-primary" type="button" id="p-save">Save profile</button>
+      </section>
+
+      <!-- ============ 2. MY BRAND ============ -->
+      <section class="panel set-panel" id="tab-brand" hidden>
+        <div class="panel-title">My brand</div>
+        <p class="muted">You work one brand, and this is it. The name and the colour belong to
+        the coordinator; the report password is yours to hand out.</p>
+
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label" for="b-name">Brand</label>
+            <input class="input" id="b-name" type="text" readonly>
+          </div>
+          <div class="field">
+            <label class="field-label" for="b-color">Colour</label>
+            <input class="input" id="b-color" type="color" disabled>
+          </div>
+        </div>
+
+        <hr class="hr">
+
+        <div class="field">
+          <label class="field-label" for="b-report-password">Report password</label>
+          <input class="input" id="b-report-password" type="text" placeholder="e.g. kapalapi2026">
+          <div class="caption" id="b-report-help">This opens your brand&rsquo;s campaign report on
+          the public site. It is for the brand&rsquo;s own people, who have no account here &ndash;
+          it is not a second login.</div>
+        </div>
+
+        <button class="btn btn-primary" type="button" id="b-save">Save report password</button>
+      </section>
+
+    </main>
+
+    <!-- ============ BOTTOM NAV (mobile) ============ -->
+    <nav class="botnav">
+      <a class="botnav-item" href="dashboard.html"><div class="botnav-glyph"></div><div class="botnav-label">Main</div></a>
+      <a class="botnav-item" href="schedules.html"><div class="botnav-glyph"></div><div class="botnav-label">Schedules</div></a>
+      <a class="botnav-item is-active" href="settings.html"><div class="botnav-glyph botnav-glyph-diamond"></div><div class="botnav-label">Settings</div></a>
+    </nav>
+
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/util.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/client/settings.js"></script>
+</body>
+</html>
