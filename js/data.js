@@ -64,7 +64,13 @@ window.RoadCrew = window.RoadCrew || {};
       { id: 'c-03', scheduleId: 's-09', userId: 'u-03', date: '2026-08-29', time: '09:58', photo: 'img/checkin-03.svg', note: 'Weekend crowd, blind box popular' },
       { id: 'c-04', scheduleId: 's-09', userId: 'u-07', date: '2026-08-30', time: '10:20', photo: 'img/checkin-04.svg', note: '' },
       { id: 'c-05', scheduleId: 's-09', userId: 'u-03', date: '2026-08-31', time: '10:03', photo: 'img/checkin-05.svg', note: 'Last day, stock low on Pusa Cream 5kg' },
-      { id: 'c-06', scheduleId: 's-12', userId: 'u-01', date: '2026-09-04', time: '10:09', photo: 'img/checkin-06.svg', note: 'Econjaya entrance booth' }
+      { id: 'c-06', scheduleId: 's-12', userId: 'u-01', date: '2026-09-04', time: '10:09', photo: 'img/checkin-06.svg', note: 'Econjaya entrance booth' },
+      // c-07 and c-08 are not in the written brief. They were added on Kiyo's call so the
+      // promoter screens carry the content their artboards depict: artboard 06 names this
+      // note and time, and artboard 07 shows a third photo at PKT Gua Musang on 14 Aug.
+      // Both sit inside schedules Airene genuinely holds - s-12 (4-5 Sep) and s-08 (12-14 Aug).
+      { id: 'c-07', scheduleId: 's-12', userId: 'u-01', date: '2026-09-05', time: '10:12', photo: 'img/checkin-02.svg', note: 'Day 2, sampling running' },
+      { id: 'c-08', scheduleId: 's-08', userId: 'u-01', date: '2026-08-14', time: '10:05', photo: 'img/checkin-04.svg', note: '' }
     ],
     settings: {
       companyName: 'RoadCrew Activations',
