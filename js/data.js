@@ -16,7 +16,9 @@ window.RoadCrew = window.RoadCrew || {};
     // sits behind it. Editable per brand from admin Settings.
     brands: [
       { id: 'b-kapalapi', name: 'Kapal Api', color: '#C0392B', reportPassword: 'kapalapi2026' },
-      { id: 'b-jasmine', name: 'Jasmine', color: '#2E8B57', reportPassword: 'jasmine2026' }
+      { id: 'b-jasmine', name: 'Jasmine', color: '#2E8B57', reportPassword: 'jasmine2026' },
+      { id: 'b-pocky', name: 'Pocky', color: '#C2185B', reportPassword: 'pocky2026' },
+      { id: 'b-kewpie', name: 'Kewpie', color: '#D98F14', reportPassword: 'kewpie2026' }
     ],
     outlets: [
       { id: 'o-01', name: 'Pasaraya U All Mart', regionId: 'r-east', city: 'Pasir Mas' },
@@ -32,7 +34,9 @@ window.RoadCrew = window.RoadCrew || {};
       { id: 'o-11', name: "Lotus's Seremban", regionId: 'r-central', city: 'Seremban' },
       { id: 'o-12', name: 'St. Rosyam Senawang', regionId: 'r-central', city: 'Seremban' },
       { id: 'o-13', name: 'Hero Subang', regionId: 'r-central', city: 'Subang Jaya' },
-      { id: 'o-14', name: 'Jaya Grocer Sunway Pyramid', regionId: 'r-central', city: 'Petaling Jaya' }
+      { id: 'o-14', name: 'Jaya Grocer Sunway Pyramid', regionId: 'r-central', city: 'Petaling Jaya' },
+      // Named in the client's own mockup, on the Pocky Sampling row.
+      { id: 'o-15', name: "Lotus's Setia Alam", regionId: 'r-central', city: 'Shah Alam' }
     ],
     users: [
       { id: 'u-admin', name: 'Coordinator', email: 'admin@gmail.com', password: 'admin123', role: 'admin', regionId: null, phone: '012-000 0000', status: 'active', avatar: 'img/avatar-01.svg' },
@@ -59,7 +63,9 @@ window.RoadCrew = window.RoadCrew || {};
       { id: 's-12', brandId: 'b-kapalapi', outletId: 'o-03', spIds: ['u-01'], startDate: '2026-09-04', endDate: '2026-09-05', shift: '10:00 – 18:00', status: 'planned', notes: '' },
       { id: 's-13', brandId: 'b-kapalapi', outletId: 'o-12', spIds: ['u-04'], startDate: '2026-09-04', endDate: '2026-09-06', shift: '10:00 – 18:00', status: 'planned', notes: '' },
       { id: 's-14', brandId: 'b-kapalapi', outletId: 'o-08', spIds: ['u-02'], startDate: '2026-09-12', endDate: '2026-09-12', shift: '10:00 – 18:00', status: 'planned', notes: '' },
-      { id: 's-15', brandId: 'b-jasmine', outletId: 'o-14', spIds: [], startDate: '2026-09-19', endDate: '2026-09-20', shift: '10:00 – 18:00', status: 'planned', notes: 'Unassigned sample, needs a promoter' }
+      { id: 's-15', brandId: 'b-jasmine', outletId: 'o-14', spIds: [], startDate: '2026-09-19', endDate: '2026-09-20', shift: '10:00 – 18:00', status: 'planned', notes: 'Unassigned sample, needs a promoter' },
+      { id: 's-16', brandId: 'b-pocky', outletId: 'o-15', spIds: ['u-03'], startDate: '2026-08-20', endDate: '2026-08-23', shift: '10:00 – 20:00', status: 'planned', notes: 'Pocky sampling, aisle-end stand' },
+      { id: 's-17', brandId: 'b-kewpie', outletId: 'o-13', spIds: ['u-04'], startDate: '2026-09-01', endDate: '2026-09-03', shift: '10:00 – 18:00', status: 'planned', notes: 'Kewpie dressing tasting, fresh produce section' }
     ],
     checkins: [
       { id: 'c-01', scheduleId: 's-09', userId: 'u-03', date: '2026-08-27', time: '10:05', photo: 'img/checkin-01.svg', note: 'Booth set up, sampling started' },
@@ -78,15 +84,29 @@ window.RoadCrew = window.RoadCrew || {};
 
     // Products and sales back the gated brand report on the landing page. The design brief
     // put sales capture out of scope, so none of this existed until the report was asked for.
+    // SKU names checked against each brand's own published range rather than invented.
+    // Kapal Api is Indonesian coffee (Special Mix, Grande White Coffee, Cappuccino 3 in 1,
+    // Kopi-O). Jasmine is Jasmine Food Corporation Malaysia, whose basmathi line is
+    // Royal PusaGold and PusaCream and whose local white rice includes Super Special.
+    // Pocky is Ezaki Glico, using flavours listed for the Malaysian market. Kewpie is
+    // Kewpie Malaysia, whose Roasted Sesame Dressing is their headline dressing.
     products: [
       { id: 'p-ka-01', brandId: 'b-kapalapi', name: 'Special Mix' },
       { id: 'p-ka-02', brandId: 'b-kapalapi', name: 'Grande White Coffee' },
-      { id: 'p-ka-03', brandId: 'b-kapalapi', name: 'Susu' },
-      { id: 'p-ka-04', brandId: 'b-kapalapi', name: 'Kopi O' },
-      { id: 'p-js-01', brandId: 'b-jasmine', name: 'Pusa Cream 5kg' },
+      { id: 'p-ka-03', brandId: 'b-kapalapi', name: 'Cappuccino 3 in 1' },
+      { id: 'p-ka-04', brandId: 'b-kapalapi', name: 'Kopi-O' },
+      { id: 'p-js-01', brandId: 'b-jasmine', name: 'PusaCream Basmathi 5kg' },
       { id: 'p-js-02', brandId: 'b-jasmine', name: 'Fragrant Rice 5kg' },
-      { id: 'p-js-03', brandId: 'b-jasmine', name: 'Basmati 1kg' },
-      { id: 'p-js-04', brandId: 'b-jasmine', name: 'Super Special 10kg' }
+      { id: 'p-js-03', brandId: 'b-jasmine', name: 'Royal PusaGold 5kg' },
+      { id: 'p-js-04', brandId: 'b-jasmine', name: 'Super Special 5kg' },
+      { id: 'p-pk-01', brandId: 'b-pocky', name: 'Pocky Chocolate' },
+      { id: 'p-pk-02', brandId: 'b-pocky', name: 'Pocky Strawberry' },
+      { id: 'p-pk-03', brandId: 'b-pocky', name: 'Pocky Cookies & Cream' },
+      { id: 'p-pk-04', brandId: 'b-pocky', name: 'Pocky Milky Matcha' },
+      { id: 'p-kw-01', brandId: 'b-kewpie', name: 'Roasted Sesame Dressing' },
+      { id: 'p-kw-02', brandId: 'b-kewpie', name: 'Mayonnaise Japanese Style' },
+      { id: 'p-kw-03', brandId: 'b-kewpie', name: 'Half Salad Dressing' },
+      { id: 'p-kw-04', brandId: 'b-kewpie', name: 'Sesame Soy Sauce Dressing' }
     ],
 
     // Every row keys on scheduleId, never on a promoter or a date range, so the reference
@@ -135,7 +155,38 @@ window.RoadCrew = window.RoadCrew || {};
       { id: 'sa-37', scheduleId: 's-09', productId: 'p-js-01', date: '2026-08-31', units: 28 },
       { id: 'sa-38', scheduleId: 's-09', productId: 'p-js-02', date: '2026-08-31', units: 33 },
       { id: 'sa-39', scheduleId: 's-09', productId: 'p-js-03', date: '2026-08-31', units: 19 },
-      { id: 'sa-40', scheduleId: 's-09', productId: 'p-js-04', date: '2026-08-31', units: 12 }
+      { id: 'sa-40', scheduleId: 's-09', productId: 'p-js-04', date: '2026-08-31', units: 12 },
+      // Pocky: s-16 Lotus's Setia Alam, 20-23 Aug. Chocolate leads, matcha trails.
+      { id: 'sa-41', scheduleId: 's-16', productId: 'p-pk-01', date: '2026-08-20', units: 58 },
+      { id: 'sa-42', scheduleId: 's-16', productId: 'p-pk-02', date: '2026-08-20', units: 44 },
+      { id: 'sa-43', scheduleId: 's-16', productId: 'p-pk-03', date: '2026-08-20', units: 31 },
+      { id: 'sa-44', scheduleId: 's-16', productId: 'p-pk-04', date: '2026-08-20', units: 19 },
+      { id: 'sa-45', scheduleId: 's-16', productId: 'p-pk-01', date: '2026-08-21', units: 72 },
+      { id: 'sa-46', scheduleId: 's-16', productId: 'p-pk-02', date: '2026-08-21', units: 55 },
+      { id: 'sa-47', scheduleId: 's-16', productId: 'p-pk-03', date: '2026-08-21', units: 38 },
+      { id: 'sa-48', scheduleId: 's-16', productId: 'p-pk-04', date: '2026-08-21', units: 24 },
+      { id: 'sa-49', scheduleId: 's-16', productId: 'p-pk-01', date: '2026-08-22', units: 95 },
+      { id: 'sa-50', scheduleId: 's-16', productId: 'p-pk-02', date: '2026-08-22', units: 71 },
+      { id: 'sa-51', scheduleId: 's-16', productId: 'p-pk-03', date: '2026-08-22', units: 49 },
+      { id: 'sa-52', scheduleId: 's-16', productId: 'p-pk-04', date: '2026-08-22', units: 31 },
+      { id: 'sa-53', scheduleId: 's-16', productId: 'p-pk-01', date: '2026-08-23', units: 88 },
+      { id: 'sa-54', scheduleId: 's-16', productId: 'p-pk-02', date: '2026-08-23', units: 66 },
+      { id: 'sa-55', scheduleId: 's-16', productId: 'p-pk-03', date: '2026-08-23', units: 45 },
+      { id: 'sa-56', scheduleId: 's-16', productId: 'p-pk-04', date: '2026-08-23', units: 28 },
+      // Kewpie: s-17 Hero Subang, 1-3 Sep. Roasted Sesame leads, which matches its
+      // real standing as the brand's headline dressing in Peninsular Malaysia.
+      { id: 'sa-57', scheduleId: 's-17', productId: 'p-kw-01', date: '2026-09-01', units: 47 },
+      { id: 'sa-58', scheduleId: 's-17', productId: 'p-kw-02', date: '2026-09-01', units: 39 },
+      { id: 'sa-59', scheduleId: 's-17', productId: 'p-kw-03', date: '2026-09-01', units: 22 },
+      { id: 'sa-60', scheduleId: 's-17', productId: 'p-kw-04', date: '2026-09-01', units: 16 },
+      { id: 'sa-61', scheduleId: 's-17', productId: 'p-kw-01', date: '2026-09-02', units: 53 },
+      { id: 'sa-62', scheduleId: 's-17', productId: 'p-kw-02', date: '2026-09-02', units: 44 },
+      { id: 'sa-63', scheduleId: 's-17', productId: 'p-kw-03', date: '2026-09-02', units: 26 },
+      { id: 'sa-64', scheduleId: 's-17', productId: 'p-kw-04', date: '2026-09-02', units: 18 },
+      { id: 'sa-65', scheduleId: 's-17', productId: 'p-kw-01', date: '2026-09-03', units: 61 },
+      { id: 'sa-66', scheduleId: 's-17', productId: 'p-kw-02', date: '2026-09-03', units: 48 },
+      { id: 'sa-67', scheduleId: 's-17', productId: 'p-kw-03', date: '2026-09-03', units: 29 },
+      { id: 'sa-68', scheduleId: 's-17', productId: 'p-kw-04', date: '2026-09-03', units: 21 }
     ],
     settings: {
       companyName: 'RoadCrew Activations',
@@ -232,21 +283,34 @@ window.RoadCrew = window.RoadCrew || {};
         continue;
       }
 
-      // Fields added to a seeded record that the stored copy predates.
       if (Object.prototype.toString.call(SEED[key]) !== '[object Array]') { continue; }
+
       for (i = 0; i < SEED[key].length; i++) {
         var seeded = SEED[key][i];
+        var found = null;
         for (j = 0; j < state[key].length; j++) {
-          if (state[key][j].id !== seeded.id) { continue; }
-          var field;
-          for (field in seeded) {
-            if (!Object.prototype.hasOwnProperty.call(seeded, field)) { continue; }
-            if (!Object.prototype.hasOwnProperty.call(state[key][j], field)) {
-              state[key][j][field] = seeded[field];
-              changed = true;
-            }
+          if (state[key][j].id === seeded.id) { found = state[key][j]; break; }
+        }
+
+        // A record the seed has gained since - a new brand, its products, its sales.
+        // Without this, adding demo data would only ever reach a browser that had
+        // never opened the site. Note the trade-off: a SEEDED record the user
+        // deleted comes back on the next seed update. Records the user created are
+        // never touched, and no existing field is ever overwritten.
+        if (!found) {
+          state[key].push(deepCopy(seeded));
+          changed = true;
+          continue;
+        }
+
+        // Fields added to a seeded record that the stored copy predates.
+        var field;
+        for (field in seeded) {
+          if (!Object.prototype.hasOwnProperty.call(seeded, field)) { continue; }
+          if (!Object.prototype.hasOwnProperty.call(found, field)) {
+            found[field] = seeded[field];
+            changed = true;
           }
-          break;
         }
       }
     }

@@ -46,6 +46,8 @@ The **Info** section of the landing page carries one report card per brand. Each
 |---|---|
 | Kapal Api | `kapalapi2026` |
 | Jasmine | `jasmine2026` |
+| Pocky | `pocky2026` |
+| Kewpie | `kewpie2026` |
 
 A report shows the total units sampled for the week, a chart of units per day, a ranked product-popularity chart, and a breakdown by outlet with the supervisor and promoter head-count.
 
@@ -101,7 +103,9 @@ img/                logo, avatars, check-in placeholders, gallery photographs
 
 ## Notes
 
+- **It is a working prototype, not a mockup.** Creating and editing schedules, adding and deactivating users, adding brands, changing settings and uploading check-in photos all write to `localStorage` and survive a reload. Nothing is hardcoded into the pages — every screen renders from the stored database.
 - Everything is stored in the browser under `roadcrew.db`, with the session under `roadcrew.session`. Use **Settings → Reset demo data** to start over.
+- The stored database **migrates itself forward**. When the seed gains a collection, a record or a field, an existing browser picks it up on the next load — while anything you changed or created is left alone. One trade-off: a *seeded* record you delete will come back on the next seed update.
 - Uploaded photos are downscaled and kept as data URLs, so they survive a reload but stay small enough for `localStorage`.
 - Dates are handled as local `YYYY-MM-DD` values throughout, never UTC, so a day never shifts.
 - Status is derived from the real system date at render time, not stored, so the demo stays live rather than frozen.

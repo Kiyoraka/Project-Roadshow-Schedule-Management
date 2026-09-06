@@ -375,6 +375,19 @@ window.RoadCrew = window.RoadCrew || {};
       copy.textContent = '© ' + year + ' ' +
         (s.companyName || 'RoadCrew Activations') + '. All rights reserved.';
     }
+
+    // Client chips follow the brand list rather than naming two by hand, so adding
+    // a brand in Settings shows up here without an edit.
+    var chips = byId('footer-chips');
+    if (chips) {
+      var brands = R.db.brands();
+      var html = '';
+      var i;
+      for (i = 0; i < brands.length; i++) {
+        html += '<span class="footer-chip">' + U.escapeHtml(brands[i].name) + '</span>';
+      }
+      chips.innerHTML = html;
+    }
   }
 
   /* ------------------------------------------------------------- init --- */
