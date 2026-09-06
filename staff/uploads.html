@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Uploads - RoadCrew</title>
+<link rel="icon" href="../img/logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/staff.css">
+</head>
+<body class="staff">
+<div class="phone">
+
+  <!-- ============ HEADER (artboard 07) ============ -->
+  <header class="sheader">
+    <img class="sheader-avatar" id="avatar" src="" alt="">
+    <div class="sheader-body">
+      <div class="sheader-name">My Uploads</div>
+      <div class="sheader-sub" id="count"></div>
+    </div>
+    <button class="sheader-logout" type="button" data-logout>Log out</button>
+  </header>
+
+  <!-- ============ MONTH GROUPS ============ -->
+  <main class="scontent" id="groups"></main>
+
+  <!-- ============ BOTTOM NAV ============ -->
+  <nav class="sbotnav">
+    <a class="sbotnav-item" href="calendar.html">
+      <div class="sbotnav-glyph"></div>
+      <div class="sbotnav-label">Calendar</div>
+    </a>
+    <a class="sbotnav-item is-active" href="uploads.html">
+      <div class="sbotnav-glyph sbotnav-glyph-alt"></div>
+      <div class="sbotnav-label">Uploads</div>
+    </a>
+    <button class="sbotnav-item" type="button" data-profile>
+      <div class="sbotnav-glyph sbotnav-glyph-round"></div>
+      <div class="sbotnav-label">Profile</div>
+    </button>
+  </nav>
+
+</div>
+
+<!-- ============ PROFILE SHEET ============ -->
+<div class="modal" id="profile">
+  <div class="modal-box">
+    <div class="modal-title" id="profile-name">Profile</div>
+    <div class="modal-text" id="profile-email"></div>
+    <div class="modal-text" id="profile-region"></div>
+    <div class="modal-foot">
+      <button class="btn" type="button" id="profile-close">Close</button>
+      <button class="btn btn-danger" type="button" data-logout>Log out</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/util.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/staff/uploads.js"></script>
+</body>
+</html>
