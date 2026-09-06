@@ -517,12 +517,18 @@ window.RoadCrew = window.RoadCrew || {};
     on('scrim', 'click', closeDrawer);
     on('d-save', 'click', saveDraft);
 
+    // prevMonth/nextMonth return { year, month }; this page's state field is `m`.
+    // Assigning the returned object straight into `month` left `month.m` undefined,
+    // which the renderer quietly folded back to the current month - so the arrows
+    // appeared to do nothing. Map the shape explicitly.
     on('month-prev', 'click', function () {
-      month = R.calendar.prevMonth(month.year, month.m);
+      var p = R.calendar.prevMonth(month.year, month.m);
+      month = { year: p.year, m: p.month };
       renderMonth();
     });
     on('month-next', 'click', function () {
-      month = R.calendar.nextMonth(month.year, month.m);
+      var n = R.calendar.nextMonth(month.year, month.m);
+      month = { year: n.year, m: n.month };
       renderMonth();
     });
 
