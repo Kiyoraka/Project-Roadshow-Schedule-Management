@@ -15,6 +15,17 @@ window.RoadCrew = window.RoadCrew || {};
 
   var U = R.util;
 
+  // The admin does not write schedules. The client said so in as many words -
+  // "Admin kenot do any editing at the moment as only do checking" - because this
+  // account exists to verify the month before promoter salary is paid, not to plan
+  // work. The schedules belong to the client-service desk in client/.
+  //
+  // Read-only here is enforced in four places, not one: the New button never
+  // renders, the row actions never render, the drawer opens with its fields
+  // disabled and no Save, and the two write functions refuse outright. Hiding a
+  // button is a courtesy; the refusal at the bottom is the rule.
+  var READ_ONLY = true;
+
   var view = 'list';
   var draft = null;          // schedule being created or edited
   var pending = null;        // id queued for cancellation
@@ -201,9 +212,10 @@ window.RoadCrew = window.RoadCrew || {};
           '<div class="sched-dim">' + U.escapeHtml(s.shift) + '</div>' +
           '<div>' + statusBadge(s) + '</div>' +
           '<div class="sched-actions">' +
-            (cancelled ? '<span>&#9998;</span><span>&#10005;</span>'
-                       : '<button class="sched-act" type="button" data-edit="' + U.escapeHtml(s.id) + '" title="Edit">&#9998;</button>' +
-                         '<button class="sched-act" type="button" data-cancel="' + U.escapeHtml(s.id) + '" title="Cancel">&#10005;</button>') +
+            (READ_ONLY || cancelled
+              ? '<span>&#9998;</span><span>&#10005;</span>'
+              : '<button class="sched-act" type="button" data-edit="' + U.escapeHtml(s.id) + '" title="Edit">&#9998;</button>' +
+                '<button class="sched-act" type="button" data-cancel="' + U.escapeHtml(s.id) + '" title="Cancel">&#10005;</button>') +
           '</div>' +
         '</div>';
 
@@ -344,8 +356,10 @@ window.RoadCrew = window.RoadCrew || {};
         status: existing.status,
         notes: existing.notes
       };
-      byId('drawer-title').textContent = 'Edit schedule';
+      byId('drawer-title').textContent = READ_ONLY ? 'Schedule' : 'Edit schedule';
     } else {
+      // A read-only page has nothing to open a blank drawer for.
+      if (READ_ONLY) { return; }
       draft = blank();
       byId('drawer-title').textContent = 'New schedule';
     }
@@ -362,10 +376,31 @@ window.RoadCrew = window.RoadCrew || {};
     byId('d-notes').value = draft.notes;
 
     renderPromoters();
+    applyReadOnly();
 
     byId('drawer').className = 'drawer is-open';
     byId('drawer').setAttribute('aria-hidden', 'false');
     byId('scrim').className = 'scrim is-open';
+  }
+
+  // The monthly check still wants to look inside a schedule - who was on it, which
+  // days, what the note said - so the drawer stays and becomes a detail view.
+  // Disabled rather than hidden, because a greyed-out field still tells you what
+  // was booked; an absent one tells you nothing.
+  function applyReadOnly() {
+    if (!READ_ONLY) { return; }
+    var fields = ['d-brand', 'd-region', 'd-subregion', 'd-outlet', 'd-start', 'd-end', 'd-shift', 'd-notes'];
+    var i;
+    for (i = 0; i < fields.length; i++) {
+      var el = byId(fields[i]);
+      if (el) { el.disabled = true; }
+    }
+    var save = byId('d-save');
+    if (save) { save.hidden = true; }
+    var cancel = byId('d-cancel');
+    if (cancel) { cancel.textContent = 'Close'; }
+    var conflict = byId('d-conflict');
+    if (conflict) { conflict.hidden = true; }
   }
 
   function closeDrawer() {
@@ -506,6 +541,12 @@ window.RoadCrew = window.RoadCrew || {};
   }
 
   function saveDraft() {
+    // The floor under the hidden button. Nothing on this page should be able to
+    // reach here, which is exactly why it is checked.
+    if (READ_ONLY) {
+      U.toast('This account can view schedules but not change them.', 'danger');
+      return;
+    }
     if (!draft.outletId) {
       U.toast('Pick an outlet first.', 'danger');
       return;
@@ -541,6 +582,7 @@ window.RoadCrew = window.RoadCrew || {};
   /* ------------------------------------------------------------- cancel --- */
 
   function askCancel(id) {
+    if (READ_ONLY) { return; }
     var s = R.db.byId('schedules', id);
     if (!s) { return; }
     pending = id;
@@ -614,6 +656,8 @@ window.RoadCrew = window.RoadCrew || {};
       }
     });
 
+    var addBtn = byId('btn-new');
+    if (addBtn && READ_ONLY) { addBtn.hidden = true; }
     on('btn-new', 'click', function () { openDrawer(null); });
     on('drawer-close', 'click', closeDrawer);
     on('d-cancel', 'click', closeDrawer);
@@ -670,6 +714,7 @@ window.RoadCrew = window.RoadCrew || {};
     });
 
     byId('d-promoters').addEventListener('click', function (ev) {
+      if (READ_ONLY) { return; }
       var node = ev.target;
       while (node && node !== this) {
         if (node.getAttribute && node.getAttribute('data-pick')) {
@@ -685,6 +730,7 @@ window.RoadCrew = window.RoadCrew || {};
 
     on('confirm-no', 'click', closeConfirm);
     on('confirm-yes', 'click', function () {
+      if (READ_ONLY) { closeConfirm(); return; }
       var s = pending ? R.db.byId('schedules', pending) : null;
       if (s) {
         s.status = 'cancelled';
