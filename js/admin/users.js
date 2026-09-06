@@ -19,6 +19,7 @@ window.RoadCrew = window.RoadCrew || {};
   var region = '';     // '' = All, otherwise a region id
   var draft = null;    // user being created or edited
   var pending = null;  // id queued for deactivation
+  var page = 1;
 
   // Artboard 10 right-aligns the status and the event count against the card
   // edge. Nothing in base.css does that, and the brief forbids new CSS, so the
@@ -110,7 +111,13 @@ window.RoadCrew = window.RoadCrew || {};
   }
 
   function render() {
-    var rows = visible();
+    // Same shape as the Schedules list: one slice feeds the desktop table and
+    // the mobile cards, and paginate clamps so a deactivation on the last page
+    // cannot strand you on an empty one.
+    var pageState = U.paginate(visible(), page);
+    var rows = pageState.rows;
+    page = pageState.page;
+
     var htmlRows = '';
     var htmlCards = '';
     var i;
@@ -167,7 +174,12 @@ window.RoadCrew = window.RoadCrew || {};
       '<tr><td colspan="7"><div class="empty"><div class="empty-text">No users in this region.</div></div></td></tr>';
     byId('user-cards').innerHTML = htmlCards ||
       '<div class="empty"><div class="empty-text">No users in this region.</div></div>';
+    byId('user-foot').innerHTML = U.pagerHtml(pageState, 'users');
   }
+
+  // Picking a region changes which users exist, not which page of them you are
+  // looking at, so the page number goes back to the start.
+  function resetPage() { page = 1; }
 
   /* --------------------------------------------------------------- drawer -- */
 
@@ -276,8 +288,13 @@ window.RoadCrew = window.RoadCrew || {};
       avatar: draft.avatar || 'img/avatar-01.svg'
     };
 
+    var isNew = !draft.id;
+
     R.db.upsert('users', record);
     closeDrawer();
+    // A new user appends to the end of the list, so jump to the last page to
+    // show it rather than leaving the reader wondering whether it saved.
+    if (isNew) { page = Math.ceil(visible().length / U.PAGE_SIZE); }
     render();
     U.toast('User saved.', 'success');
   }
@@ -340,7 +357,23 @@ window.RoadCrew = window.RoadCrew || {};
       while (node && node !== this) {
         if (node.getAttribute && node.getAttribute('data-region') !== null) {
           region = node.getAttribute('data-region');
+          resetPage();
           renderChips();
+          render();
+          return;
+        }
+        node = node.parentNode;
+      }
+    });
+
+    // Bound to the footer, which survives every render, rather than to the
+    // buttons inside it, which do not.
+    on('user-foot', 'click', function (ev) {
+      var node = ev.target;
+      while (node && node !== this) {
+        var want = node.getAttribute && node.getAttribute('data-page');
+        if (want) {
+          page = U.pageFromClick(want, page);
           render();
           return;
         }
