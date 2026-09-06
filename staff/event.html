@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Event detail - RoadCrew</title>
+<link rel="icon" href="../img/logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/staff.css">
+</head>
+<body class="staff">
+<div class="phone">
+
+  <!-- ============ HEADER ============ -->
+  <header class="sheader">
+    <button class="sheader-back" type="button" id="back" aria-label="Back to calendar">&#8592;</button>
+    <div class="sheader-title">Event detail</div>
+  </header>
+
+  <!-- ============ CONTENT ============ -->
+  <main class="scontent">
+
+    <div class="today-card" id="event-card"></div>
+
+    <label class="drop" id="drop" for="file">
+      <div class="drop-icon"><div class="drop-glyph"></div></div>
+      <div class="drop-title">Take or choose a photo</div>
+      <div class="drop-sub" id="drop-sub">Photo proof of presence &middot; up to 3 per event</div>
+    </label>
+    <input type="file" id="file" accept="image/*" capture="environment" class="visually-hidden">
+    <img class="drop-preview" id="preview" hidden alt="">
+
+    <div>
+      <label class="note-label" for="note">Note (optional)</label>
+      <input class="input note-input" id="note" type="text" placeholder="Booth set up, sampling started&hellip;">
+    </div>
+
+    <button class="btn btn-primary btn-block btn-tall" type="button" id="submit" disabled>Submit check-in</button>
+
+    <div>
+      <div class="shots-title">Photos from this event</div>
+      <div class="shots" id="shots"></div>
+    </div>
+
+  </main>
+
+  <!-- ============ BOTTOM NAV ============ -->
+  <nav class="sbotnav">
+    <a class="sbotnav-item is-active" href="calendar.html">
+      <div class="sbotnav-glyph"></div>
+      <div class="sbotnav-label">Calendar</div>
+    </a>
+    <a class="sbotnav-item" href="uploads.html">
+      <div class="sbotnav-glyph sbotnav-glyph-alt"></div>
+      <div class="sbotnav-label">Uploads</div>
+    </a>
+    <button class="sbotnav-item" type="button">
+      <div class="sbotnav-glyph sbotnav-glyph-round"></div>
+      <div class="sbotnav-label">Profile</div>
+    </button>
+  </nav>
+
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/util.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/staff/event.js"></script>
+</body>
+</html>
