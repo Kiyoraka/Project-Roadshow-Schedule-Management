@@ -68,12 +68,12 @@ Passwords are editable per brand in **Settings → Brands**.
 - **Gallery** — a mosaic of six generated activation photographs (gpt-image-2), deliberately unbranded, with a lightbox.
 - **Info** — a report card per brand with a blurred sparkline teaser of its week behind a lock, opened with that brand's password.
 
-**Admin** — a desktop shell that collapses to an icon rail, then to a phone layout with a bottom nav.
+**Admin** — a desktop shell that collapses to an icon rail, then to a phone layout with a bottom nav. Every admin page runs full bleed: there is no width cap, because a dashboard's job is to show more at once on a bigger screen. Settings is the exception — its form fields cap at a readable measure while its tables still use the room.
 
 - **Main** — events this week, promoters on duty, check-ins done against duty days, unassigned slots, a Monday-to-Sunday week strip, today's check-in feed and region coverage for the month.
-- **Schedules** — all 15 seeded schedules as a table or a month calendar, filterable by brand, region, promoter and status. Creating or editing opens a drawer that warns about double-booking without ever blocking the save.
-- **Users** — promoters by region, active or inactive, with how many events each has this month.
-- **Settings** — company profile, brands, check-in rules, and a reset that restores the seed.
+- **Schedules** — the seeded schedules as a table or a month calendar, filterable by brand, region, promoter and status. The table shows ten at a time with a count and page buttons underneath; the month calendar is not paged. Creating or editing opens a drawer that warns about double-booking without ever blocking the save.
+- **Users** — promoters by region, active or inactive, with how many events each has this month. Paged ten at a time, the same way Schedules is.
+- **Settings** — four tabs: company profile, brands, check-in rules, and a reset that restores the seed. The open tab is written to the URL, so saving a brand keeps you on Brands and `settings.html#checkin` opens straight onto the check-in rules.
 
 **Promoter** — a phone-first shell.
 

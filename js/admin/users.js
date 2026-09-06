@@ -174,7 +174,10 @@ window.RoadCrew = window.RoadCrew || {};
       '<tr><td colspan="7"><div class="empty"><div class="empty-text">No users in this region.</div></div></td></tr>';
     byId('user-cards').innerHTML = htmlCards ||
       '<div class="empty"><div class="empty-text">No users in this region.</div></div>';
-    byId('user-foot').innerHTML = U.pagerHtml(pageState, 'users');
+    // Guarded: the list is the page's reason to exist and the pager is a
+    // convenience, so a missing footer must not take the rows down with it.
+    var foot = byId('user-foot');
+    if (foot) { foot.innerHTML = U.pagerHtml(pageState, 'users'); }
   }
 
   // Picking a region changes which users exist, not which page of them you are

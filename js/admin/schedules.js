@@ -204,8 +204,13 @@ window.RoadCrew = window.RoadCrew || {};
       '<div class="empty"><div class="empty-text">No schedules match these filters.</div></div>';
     byId('sched-cards').innerHTML = htmlCards ||
       '<div class="empty"><div class="empty-text">No schedules match these filters.</div></div>';
-    byId('sched-foot').innerHTML =
-      U.pagerHtml(pageState, 'schedules', 'sorted by start date, newest first');
+    // Guarded for the same reason as the Users list: the rows matter, the
+    // pager is a convenience, and a missing footer must not lose both.
+    var foot = byId('sched-foot');
+    if (foot) {
+      foot.innerHTML =
+        U.pagerHtml(pageState, 'schedules', 'sorted by start date, newest first');
+    }
 
     if (today) { /* today drives deriveStatus above */ }
   }
