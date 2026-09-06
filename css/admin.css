@@ -153,13 +153,22 @@
   flex: none;
 }
 
+/* Full bleed. There is no max-width here on purpose: the content area is a
+   dashboard, and a dashboard's job is to show more at once on a bigger screen.
+   A cap left a dead band of background down the right of a 1920px display while
+   the tables it was protecting were the very things that wanted the room. The
+   padding does the breathing, not a width limit.
+
+   The exception is a form. See .set-panel below - Settings caps its fields,
+   because a label and its input stop reading as a pair once they are a metre
+   apart. Tables widen; forms do not. */
 .content {
   padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  max-width: 1440px;
   width: 100%;
+  min-width: 0;
 }
 
 /* App bar and bottom nav exist only on the mobile shell */
@@ -219,6 +228,17 @@
 }
 .panel-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
 .panel-title-tight { margin-bottom: 12px; }
+
+/* Settings panel. Now that .content is full bleed, a form inside one would
+   stretch a single-line text input across the whole screen, which reads as
+   broken and puts the label an inch of eye travel from its field. Cap the form
+   controls at a comfortable measure and leave everything else alone - the
+   brands table still uses the full width, which is what a table is for. */
+.set-panel > .field,
+.set-panel > .field-row,
+.set-panel > .row,
+.set-panel > .muted,
+.set-panel > .hr { max-width: 820px; }
 
 /* --------------------------------------------------------- week strip --- */
 
