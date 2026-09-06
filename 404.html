@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found - RoadCrew</title>
+<link rel="icon" href="img/logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<style>
+  .nf {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: var(--brand-900);
+  }
+  .nf-card {
+    width: 420px;
+    max-width: 100%;
+    background: var(--surface);
+    border-radius: var(--r-card);
+    padding: 32px;
+    box-shadow: var(--shadow-modal);
+    text-align: center;
+  }
+  .nf-mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    background: var(--brand);
+    display: grid;
+    place-items: center;
+    font-size: 16px;
+    font-weight: 800;
+    color: #fff;
+    margin: 0 auto 20px;
+  }
+  .nf-code { font-size: 44px; font-weight: 800; letter-spacing: -.025em; line-height: 1; }
+  .nf-title { font-size: 18px; font-weight: 700; margin: 12px 0 6px; }
+  .nf-text { font-size: 14px; line-height: 1.5; color: var(--ink-muted); margin-bottom: 24px; }
+</style>
+</head>
+<body>
+  <div class="nf">
+    <div class="nf-card">
+      <div class="nf-mark">R</div>
+      <div class="nf-code">404</div>
+      <div class="nf-title">That page is not on the schedule</div>
+      <div class="nf-text">The link may be out of date, or the page may have moved. Head back and pick up from your own portal.</div>
+      <a class="btn btn-primary btn-block btn-tall" id="home" href="index.html">Take me back</a>
+    </div>
+  </div>
+
+<script src="js/data.js"></script>
+<script src="js/util.js"></script>
+<script src="js/auth.js"></script>
+<script>
+// A signed-in visitor is sent to their own portal rather than the login page.
+(function (R) {
+  'use strict';
+  function init() {
+    var me = R.auth.current();
+    if (!me) { return; }
+    var home = document.getElementById('home');
+    if (home) {
+      home.setAttribute('href', R.auth.homeFor(me.role));
+      home.textContent = 'Back to my portal';
+    }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})(window.RoadCrew);
+</script>
+</body>
+</html>
