@@ -311,13 +311,17 @@ window.RoadCrew = window.RoadCrew || {};
     var today = U.fromISO(U.todayISO());
     var y = today.getFullYear();
     var m = today.getMonth();
-    var regions = R.db.regions();
+    // Grouped by SUB-region, which is the level the old flat regions became and
+    // therefore the level this table has always really reported. Rolling up to
+    // the three new top-level regions would give three rows where there are
+    // seven, and hide the East Coast inside West Malaysia.
+    var regions = R.db.subregions();
     var outlets = R.db.outlets();
     var outletRegion = {};
     var i, j, k;
 
     for (i = 0; i < outlets.length; i++) {
-      outletRegion[outlets[i].id] = outlets[i].regionId;
+      outletRegion[outlets[i].id] = outlets[i].subregionId;
     }
 
     var html = '<div class="grid-th">Region</div><div class="grid-th">Events</div>' +

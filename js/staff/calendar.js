@@ -269,11 +269,11 @@ window.RoadCrew = window.RoadCrew || {};
     byId('s-avatar').src = asset(me.avatar);
     byId('s-avatar').alt = me.name;
     byId('s-name').textContent = me.name;
-    byId('s-sub').textContent = nameOf('regions', me.regionId);
+    byId('s-sub').textContent = nameOf('subregions', me.subregionId);
 
     byId('p-name').textContent = me.name;
     byId('p-email').textContent = me.email;
-    byId('p-region').textContent = nameOf('regions', me.regionId);
+    byId('p-region').textContent = nameOf('subregions', me.subregionId);
   }
 
   function openProfile() {

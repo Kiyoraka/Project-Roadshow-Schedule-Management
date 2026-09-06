@@ -162,7 +162,7 @@ window.RoadCrew = window.RoadCrew || {};
     var region = byId('profile-region');
     if (name) { name.textContent = me.name; }
     if (email) { email.textContent = me.email; }
-    if (region) { region.textContent = nameOf('regions', me.regionId) || 'No region'; }
+    if (region) { region.textContent = nameOf('subregions', me.subregionId) || 'No region'; }
   }
 
   function openProfile() {
