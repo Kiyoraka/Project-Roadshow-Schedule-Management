@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" role="img" aria-label="Storefront entrance with overhead signage and an open doorway">
+  <defs>
+    <linearGradient id="gal5" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0" stop-color="#F8F0DE"/>
+      <stop offset="1" stop-color="#D3AE72"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="800" height="600" fill="url(#gal5)"/>
+  <rect x="0" y="482" width="800" height="118" fill="#C09B62"/>
+  <rect x="0" y="482" width="800" height="10" fill="#AC8954"/>
+  <rect x="76" y="60" width="648" height="422" rx="6" ry="6" fill="#B99259"/>
+  <rect x="76" y="60" width="648" height="96" fill="#8E6E3E"/>
+  <rect x="128" y="88" width="298" height="26" rx="13" ry="13" fill="#F7EEDA" fill-opacity="0.68"/>
+  <rect x="128" y="124" width="182" height="14" rx="7" ry="7" fill="#F7EEDA" fill-opacity="0.4"/>
+  <rect x="588" y="84" width="96" height="52" rx="6" ry="6" fill="#F7EEDA" fill-opacity="0.44"/>
+  <rect x="76" y="156" width="648" height="18" fill="#A57F4A"/>
+  <rect x="112" y="196" width="200" height="204" rx="4" ry="4" fill="#F1E4C8" fill-opacity="0.52"/>
+  <rect x="488" y="196" width="200" height="204" rx="4" ry="4" fill="#F1E4C8" fill-opacity="0.52"/>
+  <rect x="140" y="300" width="60" height="100" fill="#8E6E3E"/>
+  <rect x="216" y="264" width="70" height="136" fill="#8E6E3E"/>
+  <rect x="516" y="272" width="64" height="128" fill="#8E6E3E"/>
+  <rect x="602" y="308" width="58" height="92" fill="#8E6E3E"/>
+  <rect x="342" y="188" width="116" height="294" rx="4" ry="4" fill="#7A5E33"/>
+  <rect x="356" y="204" width="88" height="262" rx="3" ry="3" fill="#5F4826"/>
+  <rect x="396" y="320" width="8" height="34" rx="4" ry="4" fill="#D8B87C"/>
+  <rect x="112" y="400" width="200" height="14" fill="#A57F4A"/>
+  <rect x="488" y="400" width="200" height="14" fill="#A57F4A"/>
+  <rect x="76" y="430" width="648" height="52" fill="#A57F4A"/>
+  <rect x="152" y="446" width="88" height="20" rx="10" ry="10" fill="#F7EEDA" fill-opacity="0.34"/>
+  <rect x="560" y="446" width="88" height="20" rx="10" ry="10" fill="#F7EEDA" fill-opacity="0.34"/>
+  <text x="400" y="546" text-anchor="middle" dominant-baseline="central" font-family="Inter, system-ui, sans-serif" font-weight="600" font-size="24" fill="#3E2F17" fill-opacity="0.5">Storefront entrance</text>
+</svg>
