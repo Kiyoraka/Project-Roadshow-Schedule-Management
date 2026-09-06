@@ -242,6 +242,12 @@ window.RoadCrew = window.RoadCrew || {};
       { id: 'sa-67', scheduleId: 's-17', productId: 'p-kw-03', date: '2026-09-03', units: 29 },
       { id: 'sa-68', scheduleId: 's-17', productId: 'p-kw-04', date: '2026-09-03', units: 21 }
     ],
+    // Ids of seeded records the user has deleted through the UI. migrate() consults this
+    // before re-adding anything, so a deletion sticks across a reload. Without it the
+    // seed quietly resurrects every deleted region, sub-region, outlet or brand on the
+    // next page load - which is exactly the screen the Regions panel is.
+    deletedIds: [],
+
     settings: {
       companyName: 'RoadCrew Activations',
       contactEmail: 'hello@roadcrew.demo',
@@ -328,6 +334,17 @@ window.RoadCrew = window.RoadCrew || {};
     var changed = false;
     var key, i, j;
 
+    // Read the tombstones before the key loop, because the loop is what would add the
+    // deletedIds array to a state that predates it - and by then it is too late to
+    // consult. Missing or malformed reads as "nothing deleted", which is the safe way
+    // round: worst case a record comes back, never a record silently vanishes.
+    var tombstoned = {};
+    if (Object.prototype.toString.call(state.deletedIds) === '[object Array]') {
+      for (i = 0; i < state.deletedIds.length; i++) {
+        tombstoned[state.deletedIds[i]] = true;
+      }
+    }
+
     for (key in SEED) {
       if (!Object.prototype.hasOwnProperty.call(SEED, key)) { continue; }
 
@@ -349,10 +366,11 @@ window.RoadCrew = window.RoadCrew || {};
 
         // A record the seed has gained since - a new brand, its products, its sales.
         // Without this, adding demo data would only ever reach a browser that had
-        // never opened the site. Note the trade-off: a SEEDED record the user
-        // deleted comes back on the next seed update. Records the user created are
-        // never touched, and no existing field is ever overwritten.
+        // never opened the site. A seeded record the user DELETED is not re-added:
+        // its id is tombstoned in state.deletedIds and skipped here. Records the user
+        // created are never touched, and no existing field is ever overwritten.
         if (!found) {
+          if (tombstoned[seeded.id]) { continue; }
           state[key].push(deepCopy(seeded));
           changed = true;
           continue;
@@ -412,6 +430,8 @@ window.RoadCrew = window.RoadCrew || {};
     return save(fresh);
   }
 
+  // Dropping the key takes the tombstone list with it, so a reset genuinely restores
+  // every seeded record - including the ones that were deleted on purpose.
   function reset() {
     memoryState = null;
     removeRaw(DB_KEY);
@@ -439,6 +459,26 @@ window.RoadCrew = window.RoadCrew || {};
     return null;
   }
 
+  // True when the id belongs to a record the SEED ships. Only those can be resurrected
+  // by migrate(), so only those are worth tombstoning - a record the user created and
+  // then deleted is simply gone and needs no bookkeeping.
+  function isSeeded(collectionName, id) {
+    var seededList = SEED[collectionName];
+    if (Object.prototype.toString.call(seededList) !== '[object Array]') { return false; }
+    var i;
+    for (i = 0; i < seededList.length; i += 1) {
+      if (seededList[i] && seededList[i].id === id) { return true; }
+    }
+    return false;
+  }
+
+  function tombstoneList(state) {
+    if (Object.prototype.toString.call(state.deletedIds) !== '[object Array]') {
+      state.deletedIds = [];
+    }
+    return state.deletedIds;
+  }
+
   function upsert(collectionName, record) {
     var state = load();
     var list = state[collectionName];
@@ -457,6 +497,13 @@ window.RoadCrew = window.RoadCrew || {};
     }
     if (!replaced) {
       list.push(record);
+    }
+    // Writing an id back lifts its tombstone, so the list never claims a record is
+    // deleted while it is sitting in the collection.
+    var graves = tombstoneList(state);
+    var g;
+    for (g = graves.length - 1; g >= 0; g -= 1) {
+      if (record && graves[g] === record.id) { graves.splice(g, 1); }
     }
     save(state);
     return record;
@@ -477,6 +524,13 @@ window.RoadCrew = window.RoadCrew || {};
       }
     }
     if (removed) {
+      // Only a seeded id needs a tombstone, and only once.
+      if (isSeeded(collectionName, id)) {
+        var graves = tombstoneList(state);
+        if (graves.indexOf(id) === -1) {
+          graves.push(id);
+        }
+      }
       save(state);
     }
     return removed;
