@@ -74,6 +74,13 @@ window.RoadCrew = window.RoadCrew || {};
     return n + (n === 1 ? ' schedule' : ' schedules');
   }
 
+  // A brand left without a report password could never have its report opened,
+  // so an empty field falls back to a slug of the name plus the year.
+  function defaultReportPassword(name) {
+    var slug = String(name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    return (slug || 'report') + '2026';
+  }
+
   function renderBrands() {
     var brands = R.db.brands();
     var html = '';
@@ -91,6 +98,7 @@ window.RoadCrew = window.RoadCrew || {};
               '<span>' + U.escapeHtml(b.name) + '</span>' +
             '</span>' +
           '</td>' +
+          '<td class="muted">' + (U.escapeHtml(b.reportPassword || '') || '&mdash;') + '</td>' +
           '<td class="muted">' + U.escapeHtml(usageLabel(used)) + '</td>' +
           '<td>' +
             '<span class="sched-actions">' +
@@ -102,7 +110,7 @@ window.RoadCrew = window.RoadCrew || {};
     }
 
     byId('brand-rows').innerHTML = html ||
-      '<tr><td colspan="3"><div class="empty"><div class="empty-text">' +
+      '<tr><td colspan="4"><div class="empty"><div class="empty-text">' +
       'No brands yet. Add one below.</div></div></td></tr>';
   }
 
@@ -110,6 +118,7 @@ window.RoadCrew = window.RoadCrew || {};
     editingBrandId = '';
     byId('b-name').value = '';
     byId('b-color').value = '#C0392B';
+    byId('b-report-password').value = '';
     byId('b-add').textContent = 'Add brand';
     byId('b-cancel').hidden = true;
   }
@@ -120,6 +129,7 @@ window.RoadCrew = window.RoadCrew || {};
     editingBrandId = b.id;
     byId('b-name').value = b.name;
     byId('b-color').value = b.color || '#C0392B';
+    byId('b-report-password').value = b.reportPassword || '';
     byId('b-add').textContent = 'Save brand';
     byId('b-cancel').hidden = false;
     byId('b-name').focus();
@@ -128,6 +138,8 @@ window.RoadCrew = window.RoadCrew || {};
   function submitBrand() {
     var name = String(byId('b-name').value || '').replace(/^\s+|\s+$/g, '');
     var color = String(byId('b-color').value || '#C0392B');
+    var reportPassword =
+      String(byId('b-report-password').value || '').replace(/^\s+|\s+$/g, '');
 
     if (!name) {
       U.toast('Give the brand a name first.', 'danger');
@@ -146,13 +158,18 @@ window.RoadCrew = window.RoadCrew || {};
 
     var editing = !!editingBrandId;
 
+    if (!reportPassword) {
+      reportPassword = defaultReportPassword(name);
+    }
+
     // Persisting through R.db.upsert is all it takes: the schedule drawer
     // reads R.db.brands() every time it opens, so a new brand is selectable
     // there straight away.
     R.db.upsert('brands', {
       id: editingBrandId || U.uid('b'),
       name: name,
-      color: color
+      color: color,
+      reportPassword: reportPassword
     });
 
     resetBrandForm();
