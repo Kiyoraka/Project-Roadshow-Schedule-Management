@@ -13,6 +13,28 @@ window.RoadCrew = window.RoadCrew || {};
 
   function byId(id) { return document.getElementById(id); }
 
+  // Scroll to a section, and make sure it actually happened.
+  //
+  // css/landing.css sets scroll-behavior:smooth on the root, so this animates in a
+  // normal browser and honours each section's scroll-margin-top. But some
+  // environments accept a smooth scroll and then never perform it - an automated
+  // Chrome does exactly that - which would leave every nav link silently inert.
+  // If nothing has moved shortly afterwards, jump instead. A link that does nothing
+  // is a far worse outcome than one that arrives without animating.
+  function goTo(target) {
+    var before = window.pageYOffset;
+    target.scrollIntoView({ block: 'start' });
+
+    window.setTimeout(function () {
+      if (Math.abs(window.pageYOffset - before) > 2) { return; }
+      var root = document.documentElement;
+      var prev = root.style.scrollBehavior;
+      root.style.scrollBehavior = 'auto';
+      target.scrollIntoView({ block: 'start' });
+      root.style.scrollBehavior = prev;
+    }, 250);
+  }
+
   function open(id) {
     var el = byId(id);
     if (el) { el.className = 'modal is-open'; }
@@ -45,7 +67,7 @@ window.RoadCrew = window.RoadCrew || {};
         var target = document.getElementById(href.slice(1));
         if (!target) { return; }
         ev.preventDefault();
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        goTo(target);
         if (links) { links.className = 'nav-links'; }
         if (burger) { burger.setAttribute('aria-expanded', 'false'); }
       });

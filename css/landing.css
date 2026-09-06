@@ -6,6 +6,13 @@
    Everything around them is new - the artboard was a login screen, not a site.
    -------------------------------------------------------------------------- */
 
+/* Smoothing lives here rather than in the scrollIntoView call. Passing
+   behavior:'smooth' in JS is silently ignored in some environments, which leaves
+   a nav link doing nothing at all; the CSS property animates where it is
+   supported and degrades to an instant jump where it is not, while the script
+   below always performs a real scroll. This file is only loaded by index.html. */
+html { scroll-behavior: smooth; }
+
 .landing { background: var(--surface); }
 
 /* --------------------------------------------------------------- navbar -- */
