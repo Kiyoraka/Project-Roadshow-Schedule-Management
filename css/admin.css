@@ -336,6 +336,218 @@
 .mweek-name { font-size: 13px; font-weight: 600; }
 .mweek-meta { font-size: 11px; color: var(--ink-muted); }
 
+/* ============================================== SCHEDULES (03/09/04) ==== */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+/* List | Month segmented control - canvas: bordered box, active fill is brand */
+.viewseg {
+  display: flex;
+  border: 1px solid var(--line);
+  border-radius: var(--r-ctl);
+  overflow: hidden;
+  background: var(--surface);
+  flex: none;
+}
+.viewseg-btn {
+  padding: 8px 18px;
+  border: 0;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+.viewseg-btn:hover { background: var(--surface-alt); }
+.viewseg-btn.is-active { background: var(--brand); color: #fff; }
+
+.filter {
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-ctl);
+  background: var(--surface);
+  padding: 0 12px;
+  font-size: 13px;
+  color: var(--ink-muted);
+  font-weight: 400;
+}
+.filter:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-050); }
+
+.toolbar-spacer { flex: 1; }
+
+.btn-new {
+  height: 40px;
+  padding: 0 18px;
+  background: var(--brand);
+  color: #fff;
+  border: 0;
+  border-radius: var(--r-ctl);
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+}
+.btn-new:hover { background: var(--brand-600); }
+
+/* ---------------------------------------------------- schedules table --- */
+
+.sched-table {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.sched-cols {
+  display: grid;
+  grid-template-columns: 130px 110px 1.6fr 110px 1.4fr 120px 110px 80px;
+  gap: 12px;
+  padding: 12px 16px;
+}
+.sched-head {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--ink-muted);
+  border-bottom: 1px solid var(--line);
+}
+.sched-row {
+  align-items: center;
+  font-size: 13.5px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+}
+.sched-row:last-child { border-bottom: 0; }
+.sched-row:hover { background: var(--surface-alt); }
+.sched-row.is-current { background: var(--brand-050); }
+.sched-row.is-cancelled { opacity: .45; cursor: default; }
+.sched-dates { font-weight: 600; }
+.sched-dim { color: var(--ink-muted); }
+
+.sched-people { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.sched-stack { display: flex; flex: none; }
+.sched-face {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  flex: none;
+  object-fit: cover;
+}
+.sched-stack .sched-face { border: 2px solid #fff; }
+.sched-stack .sched-face + .sched-face { margin-left: -8px; }
+.sched-names { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.sched-actions {
+  display: flex;
+  gap: 10px;
+  color: var(--ink-muted);
+  font-size: 13px;
+}
+.sched-act { background: none; border: 0; padding: 0; color: inherit; font-size: 13px; }
+.sched-act:hover { color: var(--brand); }
+
+.sched-foot {
+  font-size: 12px;
+  color: var(--ink-muted);
+  margin-top: 10px;
+}
+
+.month-wrap { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-card); padding: 20px; box-shadow: var(--shadow); }
+.month-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.month-label { font-size: 16px; font-weight: 700; }
+.month-nav { display: flex; gap: 8px; }
+
+/* ----------------------------------------------- schedules card (09) ---- */
+
+.sched-cards { display: none; flex-direction: column; gap: 8px; }
+.sched-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  padding: 14px;
+  box-shadow: var(--shadow);
+  text-align: left;
+  width: 100%;
+  display: block;
+}
+.sched-card.is-current { border: 2px solid var(--brand); }
+.sched-card.is-cancelled { opacity: .45; box-shadow: none; }
+.sched-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.sched-card-name { font-size: 14.5px; font-weight: 700; }
+.sched-card-meta { font-size: 12px; color: var(--ink-muted); margin: 2px 0 8px; }
+.sched-card.is-cancelled .sched-card-meta { margin: 2px 0 0; }
+.sched-card-who { display: flex; align-items: center; gap: 8px; }
+.sched-card-face { width: 22px; height: 22px; border-radius: 50%; flex: none; object-fit: cover; }
+.sched-card-whoname { font-size: 12px; font-weight: 600; }
+
+/* -------------------------------------------------- drawer (04) -------- */
+
+.pro-list {
+  border: 1px solid var(--line);
+  border-radius: var(--r-ctl);
+  overflow: hidden;
+}
+.pro-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  width: 100%;
+  background: var(--surface);
+  border-left: 0; border-right: 0; border-top: 0;
+  text-align: left;
+}
+.pro-row:last-child { border-bottom: 0; }
+.pro-row.is-picked { background: var(--brand-050-alt); }
+.pro-row:disabled { opacity: .45; cursor: not-allowed; }
+
+.pro-check {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1.5px solid var(--line-strong);
+  display: grid;
+  place-items: center;
+  color: transparent;
+  font-size: 11px;
+  flex: none;
+}
+.pro-row.is-picked .pro-check {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+.pro-face { width: 28px; height: 28px; border-radius: 50%; flex: none; object-fit: cover; }
+.pro-body { flex: 1; min-width: 0; }
+.pro-name { font-size: 13.5px; font-weight: 600; }
+.pro-meta { font-size: 11.5px; color: var(--ink-muted); }
+
+.drawer-close {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: var(--r-ctl);
+  background: transparent;
+  display: grid;
+  place-items: center;
+  color: var(--ink-muted);
+  font-size: 15px;
+}
+.drawer-close:hover { background: var(--surface-alt); }
+
 /* -------------------------------------------------- 1100px  icon rail --- */
 
 @media (max-width: 1100px) {
@@ -442,6 +654,31 @@
   .grid-table { grid-template-columns: 2fr 1fr 1fr 1fr; font-size: 12.5px; }
   .grid-th { font-size: 10px; padding: 8px 6px; }
   .grid-td { padding: 10px 6px; }
+
+  /* Schedules: the eight-column table becomes the artboard 09 card list */
+  .sched-table { display: none; }
+  .sched-cards { display: flex; }
+
+  .toolbar { gap: 8px; margin-bottom: 12px; }
+  .toolbar-filters {
+    order: 3;
+    width: 100%;
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .toolbar-filters::-webkit-scrollbar { display: none; }
+  .viewseg-btn { padding: 8px 14px; font-size: 12px; }
+  .btn-new { height: 38px; padding: 0 14px; font-size: 13px; }
+  .filter {
+    height: 32px;
+    border-radius: var(--r-pill);
+    padding: 0 12px;
+    font-size: 12px;
+    flex: none;
+  }
+  .month-wrap { padding: 14px; }
 
   .botnav {
     display: grid;
