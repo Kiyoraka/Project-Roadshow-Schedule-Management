@@ -63,7 +63,7 @@ Passwords are editable per brand in **Settings → Brands**.
 
 - **Home** — the hero, with Log in.
 - **About** — what the agency does, and the three things the tool covers.
-- **Gallery** — placeholder imagery from the floor.
+- **Gallery** — six generated activation photographs (gpt-image-2), deliberately unbranded.
 - **Info** — a campaign report card per brand, opened with that brand's password.
 
 **Admin** — a desktop shell that collapses to an icon rail, then to a phone layout with a bottom nav.
@@ -90,7 +90,7 @@ admin/              dashboard, schedules, users, settings
 staff/              calendar, event, uploads
 css/                base (tokens and components), landing, admin, staff
 js/                 data, util, auth, calendar, report + one script per page
-img/                logo, avatars, check-in photos, gallery tiles
+img/                logo, avatars, check-in placeholders, gallery photographs
 ```
 
 `js/data.js` holds the seed and the storage layer. `js/util.js`, `js/auth.js`, `js/calendar.js` and `js/report.js` are shared. Every page loads them in that order and its own script last.
