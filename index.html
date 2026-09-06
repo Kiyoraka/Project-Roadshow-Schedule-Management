@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RoadCrew - Roadshow Schedule Management</title>
+<link rel="icon" href="img/logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/landing.css">
+</head>
+<body class="landing">
+
+  <!-- ============ HERO + LOGIN ============ -->
+  <section class="hero">
+    <div class="hero-copy">
+      <div class="hero-brand">
+        <div class="hero-mark">R</div>
+        <div class="hero-word">RoadCrew</div>
+      </div>
+      <h1 class="hero-title">Every promoter, every outlet, every day, on one calendar.</h1>
+      <p class="hero-sub">Plan roadshows, assign your promoters, and get photo proof from the booth.</p>
+      <a class="hero-cta" href="#login">Log in</a>
+    </div>
+
+    <div class="login-card" id="login">
+      <div class="login-title">Welcome back</div>
+      <div class="login-sub">Sign in to your RoadCrew account</div>
+
+      <form id="login-form" novalidate>
+        <label class="login-label" for="email">Email</label>
+        <input class="login-input" id="email" name="email" type="email" autocomplete="username"
+               placeholder="staff1@gmail.com" spellcheck="false">
+
+        <label class="login-label" for="password">Password</label>
+        <input class="login-input" id="password" name="password" type="password"
+               autocomplete="current-password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;">
+
+        <div class="login-error" id="login-error" role="alert"></div>
+
+        <button class="login-submit" type="submit">Log in</button>
+      </form>
+
+      <div class="demo-box">
+        <div class="demo-title">Demo accounts</div>
+        <div class="demo-grid" id="demo-grid">
+          <span class="demo-role">Admin</span><span class="demo-row" data-email="admin@gmail.com" data-pass="admin123">admin@gmail.com</span><span class="demo-pass">admin123</span>
+          <span class="demo-role">Staff</span><span class="demo-row" data-email="staff1@gmail.com" data-pass="admin123">staff1@gmail.com</span><span class="demo-pass">admin123</span>
+          <span class="demo-role">Staff</span><span class="demo-row" data-email="staff2@gmail.com" data-pass="admin123">staff2@gmail.com</span><span class="demo-pass">admin123</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FEATURE TILES ============ -->
+  <section class="features">
+    <div class="feature">
+      <div class="feature-icon"><div class="feature-glyph feature-glyph-square"></div></div>
+      <div class="feature-title">Schedule</div>
+      <div class="feature-text">Month and list views, brand-coloured, conflict warnings.</div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon"><div class="feature-glyph feature-glyph-circle"></div></div>
+      <div class="feature-title">Team</div>
+      <div class="feature-text">Promoters by region, active or inactive, one tap to assign.</div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon"><div class="feature-glyph feature-glyph-card"></div></div>
+      <div class="feature-title">Proof</div>
+      <div class="feature-text">Promoters check in with a photo from the outlet, coordinators see it live.</div>
+    </div>
+  </section>
+
+  <!-- ============ TRUST STRIP ============ -->
+  <section class="trust">
+    <div class="trust-left">
+      <span class="trust-label">Trusted for sampling roadshows</span>
+      <span class="trust-chip">Kapal Api</span>
+      <span class="trust-chip">Jasmine</span>
+    </div>
+    <div class="trust-meta">RoadCrew Activations &middot; Demo build</div>
+  </section>
+
+<script src="js/data.js"></script>
+<script src="js/util.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/landing.js"></script>
+</body>
+</html>
