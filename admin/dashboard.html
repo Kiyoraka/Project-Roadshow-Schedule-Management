@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Main - RoadCrew</title>
+<link rel="icon" href="../img/logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+<div class="admin">
+
+  <!-- ============ SIDEBAR (desktop) ============ -->
+  <aside class="side">
+    <div class="side-brand">
+      <div class="side-mark">R</div>
+      <div class="side-word">RoadCrew</div>
+    </div>
+    <nav class="side-nav">
+      <a class="side-item is-active" href="dashboard.html"><span class="side-item-initial">M</span><span class="side-item-label">Main</span></a>
+      <a class="side-item" href="schedules.html"><span class="side-item-initial">S</span><span class="side-item-label">Schedules</span></a>
+      <a class="side-item" href="users.html"><span class="side-item-initial">U</span><span class="side-item-label">Users</span></a>
+      <a class="side-item" href="settings.html"><span class="side-item-initial">C</span><span class="side-item-label">Settings</span></a>
+    </nav>
+    <div class="side-spacer"></div>
+    <div class="side-foot">
+      <div class="side-avatar" id="side-initial">C</div>
+      <div class="side-who">
+        <div class="side-name" id="side-name">Coordinator</div>
+        <button class="side-logout" type="button" data-logout>Log out</button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+
+    <!-- ============ APP BAR (mobile, artboard 08) ============ -->
+    <header class="appbar">
+      <div class="appbar-mark">R</div>
+      <div class="appbar-title">RoadCrew</div>
+      <div class="appbar-pill" id="appbar-date">&nbsp;</div>
+      <div class="appbar-avatar" id="appbar-initial">C</div>
+    </header>
+
+    <!-- ============ TOP BAR (desktop) ============ -->
+    <header class="topbar">
+      <div class="topbar-title">Main</div>
+      <div class="topbar-right">
+        <div class="date-pill" id="topbar-date">&nbsp;</div>
+        <div class="topbar-avatar" id="topbar-initial">C</div>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- KPI tiles -->
+      <section class="kpi-row" id="kpi-row"></section>
+
+      <section class="panel-row">
+
+        <!-- This week -->
+        <div class="panel">
+          <div class="panel-title">This week</div>
+          <div class="week-head" id="week-head"></div>
+          <div class="week-lanes" id="week-lanes"></div>
+          <div class="mweek" id="mweek"></div>
+        </div>
+
+        <!-- Today's check-ins -->
+        <div class="panel">
+          <div class="panel-title">Today's check-ins</div>
+          <div class="feed" id="feed"></div>
+        </div>
+
+      </section>
+
+      <!-- Region coverage -->
+      <section class="panel">
+        <div class="panel-title panel-title-tight">Region coverage (this month)</div>
+        <div class="grid-table" id="region-table"></div>
+      </section>
+
+    </main>
+
+    <!-- ============ BOTTOM NAV (mobile, artboard 08) ============ -->
+    <nav class="botnav">
+      <a class="botnav-item is-active" href="dashboard.html"><div class="botnav-glyph"></div><div class="botnav-label">Main</div></a>
+      <a class="botnav-item" href="schedules.html"><div class="botnav-glyph"></div><div class="botnav-label">Schedules</div></a>
+      <a class="botnav-item" href="users.html"><div class="botnav-glyph botnav-glyph-round"></div><div class="botnav-label">Users</div></a>
+      <a class="botnav-item" href="settings.html"><div class="botnav-glyph botnav-glyph-diamond"></div><div class="botnav-label">Settings</div></a>
+    </nav>
+
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/util.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/calendar.js"></script>
+<script src="../js/admin/dashboard.js"></script>
+</body>
+</html>
